@@ -157,3 +157,10 @@ NEVER:
 
 ## Additional Engineering Skills
 - `grilling` (design-tree frontier Q&A for Gate 0 discovery)
+
+## Strategic Depth & Altitude Check
+Before finalizing your deliverable, run this 4-point check (better, not bigger):
+1. **Altitude**: Are we solving the root systemic outcome, or just patching a symptom?
+2. **Staff-Level Blind Spot**: What would a top domain engineer check here that the prompt didn't explicitly ask for?
+3. **Rawest Source**: Have we verified against raw primary artifacts (source code, schemas, diffs, logs) rather than assumptions or summaries?
+4. **Outside Judge**: What deterministic external check (test, typecheck, linter, trace) will prove the solution works without the model grading its own work?

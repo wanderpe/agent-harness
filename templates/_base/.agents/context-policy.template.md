@@ -68,3 +68,10 @@ Every agent operates within defined context boundaries:
 * **ALWAYS READ**: `IMPLEMENTATION_REPORT.md` (file list), `CODE_REVIEW.md` (verdict), `QA_REPORT.md` (verdict), [`.agents/MEMORY.md`](file:///{{WORKSPACE_ROOT}}/.agents/MEMORY.md) (recent change index).
 * **READ WHEN NEEDED**: `git status`, `git diff --stat`, `TASK_CONTEXT.md` / `REQUIREMENT.md` / `HOTFIX_CONTEXT.md` (on-demand ONLY for generating `JEV_TRAINING.json` T0 evidence).
 * **DO NOT READ**: Full architecture documents, test plans, detailed review diff discussions.
+
+---
+
+## Smart-Zone Context Discipline
+- **Fresh Context Per Stage**: Prefer starting each pipeline node (Architect, Implementer, Code Reviewer, QA) in a clean context window fed only by its handoff artifact in `.agent-work/<TASK_ID>/`.
+- **Stay in the Smart Zone**: Do not drag a single long thread across all 6 stages; once a thread accumulates heavy exploration or multiple rework loops, compact or hand off via artifact pointers so reasoning quality stays sharp.
+- **Outside Judge Over Self-Grading**: Never spend tokens debating whether code "looks right" — run the deterministic check (tests, typecheck, linter, artifact validator) and act on its output.

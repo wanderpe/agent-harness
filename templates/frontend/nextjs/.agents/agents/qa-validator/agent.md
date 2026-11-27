@@ -91,3 +91,6 @@ NEVER:
 - Modify production code.
 - Mark criteria PASS without concrete evidence.
 - Declare final user approval (user has sole authority).
+
+## Outside Judge Invariant (No Self-Grading)
+Never issue `QA_STATUS: PASS` based on visual code reading or model confidence alone. Every `PASS` must cite an **external deterministic judge** that was actually executed (test suite exit code, typecheck/lint output, red-to-green repro script, or live browser trace). If no outside judge exists, flag it as a defect or build a tight repro loop via `diagnosing-bugs`.
