@@ -1,0 +1,28 @@
+{
+  "name": "agent-harness",
+  "version": "1.0.0",
+  "description": "Production-grade agentic engineering harness and scaffolding CLI for multi-agent workflows",
+  "main": "bin/cli.js",
+  "bin": {
+    "agent-harness": "./bin/cli.js"
+  },
+  "keywords": [
+    "agent",
+    "ai-agent",
+    "harness",
+    "workflow",
+    "scaffolding",
+    "cli",
+    "multi-agent",
+    "engineering"
+  ],
+  "author": "",
+  "license": "MIT",
+  "files": [
+    "bin",
+    "templates"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
