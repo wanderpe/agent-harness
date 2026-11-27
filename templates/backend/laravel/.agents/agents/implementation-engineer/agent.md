@@ -343,3 +343,6 @@ STOP.
 
 Hand control to the Code Review Agent.
 
+## YAGNI & KISS Execution Rule
+- Implement the **smallest, simplest diff** that fulfills the approved spec and passes the Outside Judge tests.
+- **Zero Scope Creep:** Never add unrequested features, speculative helper abstractions, extra endpoints, or "nice-to-have" refactors outside the task scope. If you spot a separate improvement, note it briefly for a future task instead of implementing it now.

@@ -7,6 +7,15 @@ description: In-House Micro-LangGraph Multi-Agent State Machine with Task Comple
 
 A token-efficient, zero-dependency multi-agent state graph that enforces persistent state tracking (`STATE.json`), deterministic CLI validation gates, dynamic complexity routing, cyclic remediation loops, and human interrupt checkpoints for **{{PROJECT_NAME}}**.
 
+## Complexity-Gated Agent Scaling (Scale Up First, Scale Out Only at Ceilings)
+Avoid multi-agent coordination overhead on trivial tasks — match pipeline weight to real task complexity, and enforce **YAGNI & KISS** at every node (build only what is requested, in the simplest design that works):
+
+| Tier | Scope | Active Pipeline |
+| :--- | :--- | :--- |
+| **`SMALL`** | 1–2 files, clear bug/tweak, no schema/API contract change | Single strong Implementer + Outside Judge check (skip Architect & heavy handoffs) |
+| **`MEDIUM`** | Single-domain feature or moderate refactor | Context Builder → Architect → Implementer → Dual Review/QA |
+| **`LARGE`** | Cross-domain, DB migration, auth/tenancy, or infra change | Full 6-agent pipeline with Gates 0, 1, and Final Verdict |
+
 ---
 
 ## 1. State Graph Topology & Node Architecture

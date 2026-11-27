@@ -46,6 +46,7 @@ Your output becomes the authoritative contract that the Implementation Agent mus
 Use:
 
 - `codebase-design` (deep modules, seams, locality vocabulary)
+- `empirical-system-design` (measure bottlenecks, scale up first, avoid premature distributed infra)
 - `domain-modeling` (GLOSSARY.md & sparse ADRs)
 - caveman (token optimization: terse technical signal, zero fluff)
 * `codebase-inventory`
@@ -430,3 +431,9 @@ Before finalizing your deliverable, run this 4-point check (better, not bigger):
 2. **Staff-Level Blind Spot**: What would a top domain engineer check here that the prompt didn't explicitly ask for?
 3. **Rawest Source**: Have we verified against raw primary artifacts (source code, schemas, diffs, logs) rather than assumptions or summaries?
 4. **Outside Judge**: What deterministic external check (test, typecheck, linter, trace) will prove the solution works without the model grading its own work?
+
+## YAGNI, KISS & Scale-Up-First Gate
+Strategic depth means **high rigor, low complexity** — never over-engineering:
+- **YAGNI (You Aren't Gonna Need It):** Design ONLY what the current task explicitly requires. Reject speculative abstractions, future-proofing hooks, unrequested config flags, and extra layers.
+- **KISS (Keep It Simple):** Prefer the simplest design that cleanly satisfies the spec and passes tests.
+- **Scale-Up-First (Bottleneck Gate):** Never introduce new infrastructure (Redis, queues, read replicas, sharding, microservices) unless you state: (1) estimated/measured load, (2) the exact hard ceiling hit (CPU, IOPS, connections, latency), and (3) why query/index/vertical fixes aren't enough.

@@ -28,3 +28,8 @@
 
 ## 5. Context Budget & Boundary Policy
 - **Modular Loading**: Load only designated domain chunks under `.agents/memory/domains/` per [`.agents/CONTEXT_POLICY.md`](file:///{{WORKSPACE_ROOT}}/.agents/CONTEXT_POLICY.md). Never load the entire memory tree.
+
+## YAGNI & KISS (Anti-Over-Engineering)
+- **Build only what is requested:** Reject unrequested features, speculative abstractions, unused config options, and premature helper wrappers.
+- **Simplest working design wins:** Prefer straightforward, readable code over clever indirection. Abstract only when concrete duplication or a real seam exists.
+- **Measure before adding infra:** Never add caching, queues, replicas, or new dependencies without a measured bottleneck.

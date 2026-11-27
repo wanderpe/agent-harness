@@ -18,6 +18,7 @@ A static wiki alone is passive — models still drift, rush, or hallucinate. The
 - **Smart-Zone Isolation:** 6 distinct sub-agents + handoff artifacts (`.agent-work/<TASK_ID>/`) keep every stage in a clean context window instead of dragging one bloated thread.
 - **Human Gates:** Forces alignment *before* code is written (`grilling` + Gate 0 & Gate 1) and before shipping (Gate 2 + Merge Danger).
 - **Outside Judges (No Self-Grading):** Deterministic checks (`manage-state.ts`, `validate-artifact.ts`, `tdd`, `diagnosing-bugs`, `live-web-tester`, `live-api-tester`) prove changes work instead of trusting model confidence.
+- **YAGNI, KISS & Scale-Up-First:** High rigor without over-engineering — agents reject speculative abstractions, measure bottlenecks before adding infra, and use complexity-gated routing (`SMALL` stays on 1 strong agent; `LARGE` uses the full 6-agent pipeline).
 - **Token Discipline:** Built-in `caveman` compression + tiered memory ensure agents load only the exact slice of knowledge they need.
 
 > **The Goal:** Any frontier model you plug into your repo immediately operates like a senior engineer who already knows your codebase — with strict, repeatable guardrails.
@@ -214,6 +215,7 @@ This harness synthesizes ideas, architectures, and open-source skills from the f
 ### Core Philosophy & Strategic Engineering
 - **[How to Actually Code with AI (ft. Matt Pocock)](https://www.youtube.com/watch?v=mU8WKII1gpk)** — NetworkChuck interview with Matt Pocock on tactical vs. strategic programming, keeping context in the "Smart Zone", grilling requirements before coding, leading words, and reviewing by merge danger.
 - **[How to Be More Ambitious: A Tutorial for Humans with Models](https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/)** — Felix Rieseberg's framework on the four dimensions of model ambition (**Speed, Altitude, Depth, Range**), the Depth Prompt, and the **Outside Judge** invariant (never letting the model grade its own work).
+- **[Arjay McCandless (`@arjay_mccandless` / Devmaxx)](https://www.tiktok.com/@arjay_mccandless)** — Empirical, benchmark-driven system design ("scale up first, measure before scaling out", constrained-budget optimization, and real load testing over textbook theory) informing `empirical-system-design` and complexity-gated agent scaling.
 
 ### Bundled & Adapted Open-Source Skills
 - **[mattpocock/skills](https://github.com/mattpocock/skills)** *(MIT License)* — Engineering & productivity skills (`diagnosing-bugs`, `code-review`, `tdd`, `codebase-design`, `domain-modeling`, `grilling`, `pr`, `writing-for-agents`, `prototype`, `setup-pre-commit`, `setup-ts-deep-modules`, `retro`, `research`, `handoff`, `wizard`, `improve-codebase-architecture`).
