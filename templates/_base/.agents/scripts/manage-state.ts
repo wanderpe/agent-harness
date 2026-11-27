@@ -40,6 +40,12 @@ interface StateJson {
     gate_1_architecture: "PENDING" | "APPROVED" | "REJECTED" | "SKIPPED";
     gate_6_final_verdict: "PENDING" | "APPROVED" | "REJECTED";
   };
+  review_verification?: {
+    commit_sha: string | null;
+    branch: string | null;
+    tree_hash: string | null;
+    verified_at: string;
+  };
   qa_verification?: {
     commit_sha: string | null;
     branch: string | null;
@@ -74,29 +80,40 @@ function captureGitSnapshot(): GitSnapshot {
   return { commit_sha, branch, tree_hash };
 }
 
-function checkQaFreshness(state: StateJson): { status: "FRESH" | "STALE" | "UNVERIFIED"; reason?: string; current: GitSnapshot } {
-  const current = captureGitSnapshot();
-  if (!state.qa_verification || !state.qa_verification.commit_sha) {
-    return { status: "UNVERIFIED", reason: "No QA commit SHA pinned in STATE.json", current };
+function checkSnapshotFreshness(
+  label: string,
+  pinned: { commit_sha: string | null; tree_hash: string | null } | undefined,
+  current: GitSnapshot
+): { status: "FRESH" | "STALE" | "UNVERIFIED"; reason?: string; current: GitSnapshot } {
+  if (!pinned || !pinned.commit_sha) {
+    return { status: "UNVERIFIED", reason: `No ${label} commit SHA pinned in STATE.json`, current };
   }
   if (!current.commit_sha) {
     return { status: "UNVERIFIED", reason: "Not inside a Git repository", current };
   }
-  if (current.commit_sha !== state.qa_verification.commit_sha) {
+  if (current.commit_sha !== pinned.commit_sha) {
     return {
       status: "STALE",
-      reason: `Branch HEAD moved: QA passed on ${state.qa_verification.commit_sha.slice(0, 7)}, current HEAD is ${current.commit_sha.slice(0, 7)}`,
+      reason: `Branch HEAD moved: ${label} passed on ${pinned.commit_sha.slice(0, 7)}, current HEAD is ${current.commit_sha.slice(0, 7)}`,
       current,
     };
   }
-  if (state.qa_verification.tree_hash && current.tree_hash && current.tree_hash !== state.qa_verification.tree_hash) {
+  if (pinned.tree_hash && current.tree_hash && current.tree_hash !== pinned.tree_hash) {
     return {
       status: "STALE",
-      reason: `Working tree changed since QA passed (QA tree ${state.qa_verification.tree_hash} !== current ${current.tree_hash})`,
+      reason: `Working tree changed since ${label} passed (${label} tree ${pinned.tree_hash} !== current ${current.tree_hash})`,
       current,
     };
   }
   return { status: "FRESH", current };
+}
+
+function checkQaFreshness(state: StateJson) {
+  return checkSnapshotFreshness("QA", state.qa_verification, captureGitSnapshot());
+}
+
+function checkReviewFreshness(state: StateJson) {
+  return checkSnapshotFreshness("Review", state.review_verification, captureGitSnapshot());
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -373,10 +390,16 @@ function actionTransition(args: Record<string, string>): void {
     state.gate_checkpoints.gate_1_architecture = "APPROVED";
   }
   if (targetNode === "node_5_release_manager" || targetNode === "node_hotfix_release") {
-    const freshness = checkQaFreshness(state);
-    if (freshness.status === "STALE" && args.force !== "true") {
-      console.error(`❌ STALE QA VERDICT: ${freshness.reason}`);
+    const qaFreshness = checkQaFreshness(state);
+    const reviewFreshness = checkReviewFreshness(state);
+    if (qaFreshness.status === "STALE" && args.force !== "true") {
+      console.error(`❌ STALE QA VERDICT: ${qaFreshness.reason}`);
       console.error(`   Re-run QA on the current commit before releasing (or pass --force=true to override).`);
+      process.exit(1);
+    }
+    if (reviewFreshness.status === "STALE" && args.force !== "true") {
+      console.error(`❌ STALE CODE REVIEW VERDICT: ${reviewFreshness.reason}`);
+      console.error(`   Re-run Code Review on the current commit before releasing (or pass --force=true to override).`);
       process.exit(1);
     }
     if (targetNode === "node_5_release_manager") {
@@ -445,6 +468,7 @@ function actionSetVerdict(args: Record<string, string>): void {
     state.review_cycles += 1;
 
     if (verdict === "FAIL") {
+      state.review_verification = undefined;
       if (state.review_cycles > 3) {
         state.status = "CIRCUIT_BREAKER_ESCALATED";
         state.current_node = "gate_6_user_final_verdict"; // escalation gate
@@ -460,11 +484,19 @@ function actionSetVerdict(args: Record<string, string>): void {
       return;
     }
 
-    // PASS
+    // PASS — pin exact Git commit SHA & working-tree hash
     assertHandoffArtifact(taskId, state.current_node, "node_4_qa_validator");
+    const reviewSnap = captureGitSnapshot();
+    state.review_verification = {
+      ...reviewSnap,
+      verified_at: new Date().toISOString(),
+    };
     state.current_node = "node_4_qa_validator";
     writeState(taskId, state);
     console.log(`✅ Review PASS (after ${state.review_cycles} cycle(s)) → advancing to Node 4 (QA Validator)`);
+    if (reviewSnap.commit_sha) {
+      console.log(`   📌 Pinned to commit ${reviewSnap.commit_sha.slice(0, 7)} (branch: ${reviewSnap.branch}, tree: ${reviewSnap.tree_hash})`);
+    }
     return;
   }
 
@@ -504,12 +536,16 @@ function actionStatus(args: Record<string, string>): void {
   }
 
   const state = readState(taskId);
-  const freshness = checkQaFreshness(state);
+  const current = captureGitSnapshot();
+  const reviewFreshness = checkSnapshotFreshness("Review", state.review_verification, current);
+  const qaFreshness = checkSnapshotFreshness("QA", state.qa_verification, current);
   console.log(JSON.stringify({
     ...state,
-    qa_freshness: freshness.status,
-    ...(freshness.reason ? { qa_freshness_note: freshness.reason } : {}),
-    current_head_sha: freshness.current.commit_sha,
+    review_freshness: reviewFreshness.status,
+    ...(reviewFreshness.reason ? { review_freshness_note: reviewFreshness.reason } : {}),
+    qa_freshness: qaFreshness.status,
+    ...(qaFreshness.reason ? { qa_freshness_note: qaFreshness.reason } : {}),
+    current_head_sha: current.commit_sha,
   }, null, 2));
 }
 

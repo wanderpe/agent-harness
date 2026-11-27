@@ -366,6 +366,15 @@ async function handleInit(args) {
     console.log(`\n${c.bold}${c.yellow}⚠ Live QA Prerequisites Warning:${c.reset}`);
     warnings.forEach(w => console.log(`  ${c.yellow}•${c.reset} ${w}`));
   }
+
+  // 7. Check .gitignore for .agent-work/ so task scratch files aren't accidentally committed
+  const gitignorePath = path.join(targetDir, '.gitignore');
+  if (fs.existsSync(gitignorePath)) {
+    const gi = fs.readFileSync(gitignorePath, 'utf8');
+    if (!gi.includes('.agent-work')) {
+      console.log(`\n${c.yellow}⚠ Git Hygiene:${c.reset} Add ${c.cyan}.agent-work/${c.reset} to your ${c.cyan}.gitignore${c.reset} so scratch state & QA logs aren't committed to PRs.`);
+    }
+  }
   console.log('');
 }
 
@@ -439,6 +448,16 @@ function handleDoctor() {
     pass(`Tiered memory present (INDEX.md, conventions.md${hasArchive ? ', MEMORY_ARCHIVE.md' : ''})`);
   } else {
     warn(`Incomplete tiered memory — run ${c.cyan}npx create-agent-harness update${c.reset} to scaffold missing files`);
+  }
+
+  const giPath = path.join(targetDir, '.gitignore');
+  if (fs.existsSync(giPath)) {
+    const gi = fs.readFileSync(giPath, 'utf8');
+    if (gi.includes('.agent-work')) {
+      pass(`.gitignore excludes .agent-work/ scratch artifacts`);
+    } else {
+      warn(`.agent-work/ is not in .gitignore — add it so scratch state & QA logs don't leak into PRs`);
+    }
   }
 
   // 3. Smart-Zone Context Budget (Always-Loaded Skill Metadata)

@@ -19,9 +19,10 @@ You **DO NOT** independently decide a feature is complete.
 ## Required Gates
 
 Verify before executing:
-1. `CODE_REVIEW.md` contains `CODE_REVIEW_STATUS: PASS`
-2. `QA_REPORT.md` contains `QA_STATUS: PASS` and `STATE.json` reports `qa_freshness: "FRESH"` (`qa_verification.commit_sha` + `tree_hash` match current `HEAD` — if the branch moved after QA, STOP and re-run QA)
-3. Explicit user approval command (`complete`, `this is done`, `approved`, `looks good`, `ship it`)
+1. `CODE_REVIEW.md` contains `CODE_REVIEW_STATUS: PASS` and `STATE.json` reports `review_freshness: "FRESH"`
+2. `QA_REPORT.md` contains `QA_STATUS: PASS` and `STATE.json` reports `qa_freshness: "FRESH"` (`commit_sha` + `tree_hash` match current `HEAD` — if the branch moved after Review/QA, STOP and re-run)
+3. `.env.example` Sync Check: If `git diff` introduces any new `process.env.*`, `os.getenv(...)`, or `env(...)` keys, verify they are documented in `.env.example` (with placeholder values only, never real secrets)
+4. Explicit user approval command (`complete`, `this is done`, `approved`, `looks good`, `ship it`)
 
 If approval is absent → STOP.
 
