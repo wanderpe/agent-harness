@@ -1,9 +1,10 @@
 {
-  "name": "agent-harness",
+  "name": "create-agent-harness",
   "version": "1.0.0",
   "description": "Production-grade agentic engineering harness and scaffolding CLI for multi-agent workflows",
   "main": "bin/cli.js",
   "bin": {
+    "create-agent-harness": "./bin/cli.js",
     "agent-harness": "./bin/cli.js"
   },
   "keywords": [
@@ -28,7 +29,9 @@
   },
   "files": [
     "bin",
-    "templates"
+    "templates",
+    "skills",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "engines": {
     "node": ">=16.0.0"

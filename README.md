@@ -91,7 +91,8 @@ Control adapters with `--adapters all|claude,cursor,copilot|none` (defaults to `
 Run inside your repository root:
 
 ```bash
-npx agent-harness init
+npx create-agent-harness
+# or: npm create agent-harness
 ```
 
 The CLI will auto-detect your project stack or prompt you to select one:
@@ -104,16 +105,16 @@ The CLI will auto-detect your project stack or prompt you to select one:
 ### Direct Stack Initialization
 ```bash
 # Frontend Next.js
-npx agent-harness init --stack nextjs
+npx create-agent-harness --stack nextjs
 
 # Backend Laravel
-npx agent-harness init --stack laravel
+npx create-agent-harness --stack laravel
 
 # Backend Node TypeScript
-npx agent-harness init --stack node-typescript
+npx create-agent-harness --stack node-typescript
 
 # Backend Python FastAPI
-npx agent-harness init --stack python-fastapi
+npx create-agent-harness --stack python-fastapi
 ```
 
 ---

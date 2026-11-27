@@ -387,7 +387,9 @@ ${c.bold}EXAMPLES:${c.reset}
 
 async function main() {
   const args = process.argv.slice(2);
-  const command = args[0] || 'help';
+  // Default to `init` when invoked as `npx create-agent-harness` or `npx create-agent-harness --stack nextjs`
+  const first = args[0];
+  const command = (!first || first.startsWith('--')) ? (first === '--help' || first === '-h' || first === '--version' || first === '-v' ? first : 'init') : first;
 
   switch (command) {
     case 'init':
