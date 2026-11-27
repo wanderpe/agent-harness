@@ -63,6 +63,14 @@ Avoids token bloat by organizing memory into progressive tiers:
 - **Tier 3 (Catalogs)** (`.agents/memory/services.md`, `models-schema.md`): Dynamic API and DB schemas.
 - **Tier 4 (Cold Archive)** (`.agents/MEMORY_ARCHIVE.md`): Historical releases.
 
+### 3. Built-In Token Optimization (Caveman Engine)
+Every scaffolded project automatically comes with the full **Caveman optimization toolchain** pre-installed directly inside `.agents/skills/` with zero extra steps:
+- **`caveman`**: Ultra-compressed communication mode (cuts output tokens by 65% while keeping full technical rigor).
+- **`cavecrew`**: Multi-agent delegation contracts.
+- **`caveman-compress` & `caveman-optimize`**: Automated prompt and context compression benchmarks.
+- **`caveman-explore`**: High-speed, read-only cold-start exploration without token drift.
+- **`caveman-adapter.md`**: Plug-and-play workflow in `.agents/workflows/` to adapt existing agents.
+
 ---
 
 ## ⚡ Quickstart
