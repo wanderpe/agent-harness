@@ -8,6 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const { spawnSync } = require('child_process');
 
 // ANSI Color Helpers
 const c = {
@@ -132,7 +133,7 @@ async function handleInit(args) {
   const projectName = path.basename(targetDir);
 
   console.log(`\n${c.bold}${c.cyan}========================================${c.reset}`);
-  console.log(`${c.bold}${c.green}   AGENT HARNESS INITIALIZER v1.0.2     ${c.reset}`);
+  console.log(`${c.bold}${c.green}   AGENT HARNESS INITIALIZER v1.0.3     ${c.reset}`);
   console.log(`${c.bold}${c.cyan}========================================${c.reset}\n`);
 
   let chosenStack = null;
@@ -280,7 +281,7 @@ async function handleInit(args) {
 
   // 5. Write .agents/config.json
   const config = {
-    version: '1.0.2',
+    version: '1.0.3',
     stack: chosenStack,
     adapters: installedAdapters,
     installedAt: new Date().toISOString(),
@@ -312,7 +313,53 @@ async function handleInit(args) {
   if (enabledAdapters.includes('copilot')) {
     console.log(`  ${c.cyan}.github/copilot-instructions.md${c.reset} - VS Code / GitHub Copilot adapter`);
   }
-  console.log(`\n${c.bold}${c.green}✔ Ready across Antigravity, Claude Code, Codex, Cursor, and VS Code Copilot with zero duplication!${c.reset}\n`);
+  console.log(`\n${c.bold}${c.green}✔ Ready across Antigravity, Claude Code, Codex, Cursor, and VS Code Copilot with zero duplication!${c.reset}`);
+
+  // 6. Prerequisite Check for Live QA Loops (Playwright / Postman / Newman)
+  function hasCommand(cmd) {
+    const checker = process.platform === 'win32' ? 'where' : 'which';
+    const res = spawnSync(checker, [cmd], { stdio: 'ignore' });
+    return res.status === 0;
+  }
+
+  function hasPkgDep(depNames) {
+    const pkgPath = path.join(targetDir, 'package.json');
+    if (!fs.existsSync(pkgPath)) return false;
+    try {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+      const allDeps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+      return depNames.some(d => Boolean(allDeps[d]));
+    } catch (e) {
+      return false;
+    }
+  }
+
+  const warnings = [];
+  if (STACKS[chosenStack].category === 'frontend') {
+    const hasPlaywright = hasPkgDep(['playwright', '@playwright/test']) || hasCommand('playwright');
+    if (!hasPlaywright) {
+      warnings.push(
+        `Playwright not detected (needed for live-web-tester & live-test-and-hotfix.md).\n` +
+        `    Install CLI: ${c.cyan}npm i -D @playwright/test && npx playwright install${c.reset}\n` +
+        `    Enable MCP:  Add ${c.cyan}@playwright/mcp${c.reset} to your AI IDE MCP config`
+      );
+    }
+  } else if (STACKS[chosenStack].category === 'backend') {
+    const hasPostmanOrNewman = hasCommand('newman') || hasCommand('postman') || hasPkgDep(['newman']);
+    if (!hasPostmanOrNewman) {
+      warnings.push(
+        `Postman CLI / Newman not detected (needed for live-api-tester & api-test-and-hotfix.md).\n` +
+        `    Install CLI: ${c.cyan}npm i -g newman${c.reset} (or Postman CLI)\n` +
+        `    Enable MCP:  Configure the ${c.cyan}Postman MCP server${c.reset} in your AI IDE MCP config`
+      );
+    }
+  }
+
+  if (warnings.length > 0) {
+    console.log(`\n${c.bold}${c.yellow}⚠ Live QA Prerequisites Warning:${c.reset}`);
+    warnings.forEach(w => console.log(`  ${c.yellow}•${c.reset} ${w}`));
+  }
+  console.log('');
 }
 
 function handleListSkills() {
@@ -410,7 +457,7 @@ async function main() {
       break;
     case '--version':
     case '-v':
-      console.log('1.0.2');
+      console.log('1.0.3');
       break;
     default:
       console.log(`${c.red}Unknown command: ${command}${c.reset}`);

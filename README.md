@@ -131,6 +131,13 @@ npx create-agent-harness --stack node-typescript
 npx create-agent-harness --stack python-fastapi
 ```
 
+### Recommended Live QA Prerequisites (MCP & CLI)
+To unlock the closed-loop live QA & hotfix workflows (`live-test-and-hotfix.md` and `api-test-and-hotfix.md`), ensure the matching tool + MCP server is available:
+- **Frontend (`nextjs`)**: Install Playwright (`npm i -D @playwright/test && npx playwright install`) and enable the **Playwright MCP server** (`@playwright/mcp`) in your AI IDE.
+- **Backend (`laravel`, `node-typescript`, `python-fastapi`)**: Install Newman (`npm i -g newman`) or Postman CLI and enable the **Postman MCP server** in your AI IDE.
+
+*(Running `npx create-agent-harness` automatically checks for these tools and prints a non-blocking warning if they are missing.)*
+
 ---
 
 ## 📂 Scaffolded Directory Structure
