@@ -2,11 +2,23 @@
 
 A modular, production-grade agentic harness system and scaffolding tool for multi-agent software engineering.
 
-## Overview
+## Why This Harness Exists & What It Solves
 
-**Agent Harness** provides an end-to-end framework to equip any codebase with autonomous agent workflows, strict quality gates, and tiered memory.
+Without a harness, every new AI coding session starts with **amnesia**: the model guesses your architecture, ignores conventions, bloats a single chat window until reasoning degrades, and self-grades its own output with *"looks good to me."*
 
-It standardizes how AI coding agents (Antigravity, Codex, Claude Code, Cursor, Copilot) navigate your code, propose designs, implement features, conduct code reviews, and validate changes before release.
+**Agent Harness** turns your repository itself into both the AI's **hard-harnessed knowledgebase** and its **executable engineering operating system** — regardless of which model or IDE you plug in (Antigravity, Claude Code, Codex, Cursor, VS Code Copilot).
+
+### 1. The Hard-Harnessed Knowledgebase (Persistent Brain)
+- `AGENTS.md` + `.agents/memory/` (Tier 1 invariants, Tier 2 domain chunks, Tier 3 service/schema catalogs) + `.agents/rules/` give every AI session a **version-controlled, model-agnostic institutional memory** that travels directly with the codebase.
+
+### 2. The Executable Guardrails (Active Engineering OS)
+A static wiki alone is passive — models still drift, rush, or hallucinate. The harness enforces *how* the AI works on that knowledgebase:
+- **Smart-Zone Isolation:** 6 distinct sub-agents + handoff artifacts (`.agent-work/<TASK_ID>/`) keep every stage in a clean context window instead of dragging one bloated thread.
+- **Human Gates:** Forces alignment *before* code is written (`grilling` + Gate 0 & Gate 1) and before shipping (Gate 2 + Merge Danger).
+- **Outside Judges (No Self-Grading):** Deterministic checks (`manage-state.ts`, `validate-artifact.ts`, `tdd`, `diagnosing-bugs`, `live-web-tester`, `live-api-tester`) prove changes work instead of trusting model confidence.
+- **Token Discipline:** Built-in `caveman` compression + tiered memory ensure agents load only the exact slice of knowledge they need.
+
+> **The Goal:** Any frontier model you plug into your repo immediately operates like a senior engineer who already knows your codebase — with strict, repeatable guardrails.
 
 ---
 
