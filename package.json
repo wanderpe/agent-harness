@@ -4,8 +4,8 @@
   "description": "Production-grade agentic engineering harness and scaffolding CLI for multi-agent workflows",
   "main": "bin/cli.js",
   "bin": {
-    "create-agent-harness": "./bin/cli.js",
-    "agent-harness": "./bin/cli.js"
+    "create-agent-harness": "bin/cli.js",
+    "agent-harness": "bin/cli.js"
   },
   "keywords": [
     "agent",
@@ -21,7 +21,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wanderpe/agent-harness.git"
+    "url": "git+https://github.com/wanderpe/agent-harness.git"
   },
   "homepage": "https://github.com/wanderpe/agent-harness#readme",
   "bugs": {
