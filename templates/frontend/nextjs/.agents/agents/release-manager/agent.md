@@ -1,6 +1,6 @@
 <!-- TEMPLATE_VERSION: 1.0.0 -->
 ---
-name: optivue-frontend-release-manager
+name: nextjs-release-manager
 description: Release manager & memory guardian. Performs two-tier memory sync (MEMORY_ARCHIVE.md + MEMORY.md), caveman-commit conventional commits, branch push, and PR creation only upon explicit user approval.
 ---
 

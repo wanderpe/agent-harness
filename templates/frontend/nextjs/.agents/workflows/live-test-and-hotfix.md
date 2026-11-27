@@ -9,7 +9,7 @@ description: Closed-Loop Live Verification & Rapid-Healing Pipeline (Live Test P
 
 This workflow establishes a **closed-loop live verification and rapid-healing pipeline**. It bridges test planning, real browser automated execution, diagnostic defect isolation, surgical hotfixing, dual verification, release, and post-deployment live retest verification.
 
-Use this workflow when auditing a subsystem, verifying open bug reports, running targeted regression tests on live environments (`production/preview` at `https://optivue-nextjs.vercel.app` or `local` at `http://localhost:3000`), and immediately correcting any discovered defects through the verified hotfix engine.
+Use this workflow when auditing a subsystem, verifying open bug reports, running targeted regression tests on live environments (`production/preview` at `https://<your-preview-domain>.vercel.app` or `local` at `http://localhost:3000`), and immediately correcting any discovered defects through the verified hotfix engine.
 
 ```mermaid
 stateDiagram-v2
@@ -51,7 +51,7 @@ stateDiagram-v2
 | Agent Role | System Persona / Agent Route | Primary Responsibilities in this Workflow |
 |:---|:---|:---|
 | **Spec Author & Auditor** | `code-reviewer` (`.agents/agents/code-reviewer/`) or `task-context-builder` (`.agents/agents/task-context-builder/`) | Analyzes open issues, user reports, or target modules; drafts deterministic, modular test cases with exact routes, actions, DOM assertions, and test credentials. |
-| **Live Browser Specialist** | `live-web-tester` (`.agents/agents/live-web-tester/`) | Drives headless/headed browser sessions via Playwright MCP & Chrome DevTools MCP against live targets (`https://optivue-nextjs.vercel.app` or `http://localhost:3000`). Traps console errors, hydration mismatches, and visual regressions. Outputs `LIVE_TEST_REPORT.md`. |
+| **Live Browser Specialist** | `live-web-tester` (`.agents/agents/live-web-tester/`) | Drives headless/headed browser sessions via Playwright MCP & Chrome DevTools MCP against live targets (`https://<your-preview-domain>.vercel.app` or `http://localhost:3000`). Traps console errors, hydration mismatches, and visual regressions. Outputs `LIVE_TEST_REPORT.md`. |
 | **Hotfix Engineer** | `implementation-engineer` (`.agents/agents/implementation-engineer/`) | Performs root-cause analysis; drafts `HOTFIX_PLAN.md`; executes surgical, minimal code edits adhering strictly to existing invariants and avoiding ad-hoc UI band-aids. Outputs `HOTFIX_REPORT.md`. |
 | **Code Reviewer** | `code-reviewer` (`.agents/agents/code-reviewer/`) | Conducts adversarial diff reviews on hotfixes checking security, multi-tenancy, layering, and regression risks. Participates in Parallel Dual Verification. |
 | **QA Validator** | `qa-validator` (`.agents/agents/qa-validator/`) | Audits type safety (`bunx tsc --noEmit`), lint compliance (`bunx eslint <file>`), and assertion criteria. Participates in Parallel Dual Verification. |
@@ -72,7 +72,7 @@ stateDiagram-v2
 3. **Transition**: Hand off to `live-web-tester`.
 
 #### Step 2: Live Browser Execution (`live-web-tester`)
-1. **Preflight**: Verify target URL is reachable (`https://optivue-nextjs.vercel.app` or `http://localhost:3000`).
+1. **Preflight**: Verify target URL is reachable (`https://<your-preview-domain>.vercel.app` or `http://localhost:3000`).
 2. **Action**:
    - Execute all test scenarios in the plan using Playwright MCP tools (`browser_navigate`, `browser_snapshot`, `browser_click`, `browser_fill_form`, `browser_wait_for`, `browser_console_messages`, `browser_take_screenshot`).
    - Monitor browser console for unhandled errors, warnings, and React hydration mismatches.
@@ -144,7 +144,7 @@ stateDiagram-v2
 #### Step 8: Live Retest Verification (`live-web-tester`)
 1. **Deployment Gate**: Ensure Vercel or dev server has completed deploying the hotfix commit SHA before initiating browser automation.
 2. **Action**:
-   - Launch Playwright MCP against the live environment (`https://optivue-nextjs.vercel.app` or `http://localhost:3000`).
+   - Launch Playwright MCP against the live environment (`https://<your-preview-domain>.vercel.app` or `http://localhost:3000`).
    - Execute the exact test scenarios that previously failed.
    - Confirm DOM elements, network responses, and formatting match expected state.
    - Capture post-fix screenshots in `.agent-work/<TASK_ID>/screenshots-retest/`.

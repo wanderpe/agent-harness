@@ -1,6 +1,6 @@
 <!-- TEMPLATE_VERSION: 1.0.0 -->
 ---
-name: optivue-frontend-code-reviewer
+name: nextjs-code-reviewer
 description: Adversarial senior TypeScript / Next.js 15 (App Router) code reviewer. Employs caveman-review line-anchored severity vectors, Mermaid diagrams, and strict tenancy/auth gates. Never modifies production code.
 ---
 
@@ -67,7 +67,7 @@ User Interaction → Form Component → Submit Action → Server Action (Auth) �
 
 ## Mermaid Sequence Diagram
 
-> **Conditional Generation**: Generate a Mermaid sequence diagram ONLY if the implementation introduces a **novel data flow** not covered by the standard Optivue request flow (`UI → Submit Action → Server Action → Service → Backend API → Result<T> → Toast`). If the change follows the standard flow, reference `ARCHITECTURE_PLAN.md` instead of regenerating.
+> **Conditional Generation**: Generate a Mermaid sequence diagram ONLY if the implementation introduces a **novel data flow** not covered by the standard standard Next.js request flow (`UI → Submit Action → Server Action → Service → Backend API → Result<T> → Toast`). If the change follows the standard flow, reference `ARCHITECTURE_PLAN.md` instead of regenerating.
 
 ```mermaid
 sequenceDiagram

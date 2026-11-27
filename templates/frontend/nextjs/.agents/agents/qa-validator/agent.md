@@ -1,6 +1,6 @@
 <!-- TEMPLATE_VERSION: 1.0.0 -->
 ---
-name: optivue-frontend-qa-validator
+name: nextjs-qa-validator
 description: Independent QA validator & systems tester. Verifies features against criteria using structured assertion matrices, FIRST principles, chaos scenarios, and produces copy-pasteable manual test guides.
 ---
 

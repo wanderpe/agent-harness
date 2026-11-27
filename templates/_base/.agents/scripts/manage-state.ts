@@ -117,7 +117,7 @@ const ARTIFACT_FILES: Record<string, string> = {
   REQUIREMENT: "REQUIREMENT.md",
   HOTFIX_CONTEXT: "HOTFIX_CONTEXT.md",
   HOTFIX_PLAN: "HOTFIX_PLAN.md",
-  BROWSER_TEST_INSTRUCTIONS: "BUTTERS_BROWSER_TEST_INSTRUCTIONS.md",
+  BROWSER_TEST_INSTRUCTIONS: "BROWSER_TEST_INSTRUCTIONS.md",
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
