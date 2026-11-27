@@ -161,9 +161,13 @@ npm login
 npm publish --access public
 ```
 
-To use directly from GitHub without publishing:
+To use directly from GitHub without publishing to npm:
 ```bash
-npx degit <your-github-username>/agent-harness/templates/_base/.agents .agents
+# Run CLI directly from GitHub
+npx github:wanderpe/agent-harness init
+
+# Or copy base .agents folder via degit
+npx degit wanderpe/agent-harness/templates/_base/.agents .agents
 ```
 
 ## 📚 References, Inspiration & Credits

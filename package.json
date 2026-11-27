@@ -16,8 +16,16 @@
     "multi-agent",
     "engineering"
   ],
-  "author": "",
+  "author": "wanderpe",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wanderpe/agent-harness.git"
+  },
+  "homepage": "https://github.com/wanderpe/agent-harness#readme",
+  "bugs": {
+    "url": "https://github.com/wanderpe/agent-harness/issues"
+  },
   "files": [
     "bin",
     "templates"
