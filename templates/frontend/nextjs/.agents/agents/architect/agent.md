@@ -26,7 +26,6 @@ Transform user requirements from Agent 0 (`TASK_CONTEXT.md`) into a lean, precis
 - `caveman`
 - `codebase-design` (deep modules, seams, locality vocabulary)
 - `domain-modeling` (GLOSSARY.md & sparse ADRs)
-- `research` (primary-source verification)
 - `architecture-designer`
 - `nextjs-best-practices`
 

@@ -63,11 +63,12 @@ Avoids token bloat by organizing memory into progressive tiers:
 - **Tier 3 (Catalogs)** (`.agents/memory/services.md`, `models-schema.md`): Dynamic API and DB schemas.
 - **Tier 4 (Cold Archive)** (`.agents/MEMORY_ARCHIVE.md`): Historical releases.
 
-### 3. Built-In Token Optimization & Engineering Skills
-Every scaffolded project automatically comes with two built-in skill suites pre-installed directly inside `.agents/skills/` with zero extra steps:
+### 3. Built-In Token Optimization & Engineering Skills (Context-Budgeted)
+Every scaffolded project automatically comes with a **lean, high-signal built-in skill suite** pre-installed directly inside `.agents/skills/` (~1,000 tokens/turn in `_base`, zero bloat):
 
-- **Caveman Optimization Engine (14 skills)**: `caveman`, `cavecrew`, `caveman-commit`, `caveman-compress`, `caveman-explore`, `caveman-review`, `caveman-optimize`, `caveman-learn`, and utilities, plus the `caveman-adapter.md` workflow.
-- **Core Engineering Skills (14 universal + 2 JS/TS)**: `diagnosing-bugs`, `code-review` (two-axis Standards vs Spec + Fowler smells), `tdd`, `codebase-design`, `domain-modeling`, `grilling`, `pr`, `research`, `retro`, `improve-codebase-architecture`, `prototype`, `handoff`, `wizard`, `writing-for-agents`, plus `setup-pre-commit` & `setup-ts-deep-modules` for JS/TS stacks. See [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) for MIT attribution.
+- **Core Caveman Engine (5 skills)**: `caveman`, `cavecrew`, `caveman-explore`, `caveman-review`, `caveman-commit`, plus the `caveman-adapter.md` workflow.
+- **Core Engineering Skills (8 universal + stack-specific)**: `diagnosing-bugs`, `code-review` (two-axis Standards vs Spec + Fowler smells), `tdd`, `codebase-design`, `domain-modeling`, `grilling`, `pr`, `writing-for-agents`, plus stack skills (`setup-pre-commit`, `setup-ts-deep-modules`, `prototype` for Next.js, `laravel-best-practices` for Laravel).
+- **Optional Catalog (`skills/`)**: Situational utilities (`caveman-compress`, `caveman-stats`, `retro`, `research`, `handoff`, `wizard`, `improve-codebase-architecture`, etc.) live in the optional catalog via `npx agent-harness add-skill <name>` so they never bloat your daily system prompt. See [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) for MIT attribution.
 
 ---
 

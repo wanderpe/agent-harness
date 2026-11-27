@@ -233,7 +233,7 @@ async function handleInit(args) {
   console.log(`  ${c.cyan}.agents/memory/${c.reset}    - Tiered memory & system conventions`);
   console.log(`  ${c.cyan}.agents/workflows/${c.reset} - Multi-agent and hotfix pipelines`);
   console.log(`  ${c.cyan}.agents/rules/${c.reset}     - Engineering & QA test standards`);
-  console.log(`  ${c.cyan}.agents/skills/${c.reset}    - 14+ built-in Caveman optimization & stack skills`);
+  console.log(`  ${c.cyan}.agents/skills/${c.reset}    - Lean built-in Caveman (5) + Engineering (8) + stack skills`);
   console.log(`  ${c.cyan}AGENTS.md${c.reset}          - Project root harness overview\n`);
   console.log(`${c.bold}${c.green}✔ All optimization, memory, and stack skills are built-in and ready to run with zero extra setup!${c.reset}\n`);
 }

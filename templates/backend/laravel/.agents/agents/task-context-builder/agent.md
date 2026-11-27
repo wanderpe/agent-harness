@@ -142,5 +142,4 @@ NEVER:
 
 ## Required Skills
 - `grilling` (design-tree frontier Q&A for Gate 0 discovery)
-- `research` (primary-source background verification)
 - caveman (token optimization: terse technical signal, zero fluff)

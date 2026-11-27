@@ -157,4 +157,3 @@ NEVER:
 
 ## Additional Engineering Skills
 - `grilling` (design-tree frontier Q&A for Gate 0 discovery)
-- `research` (primary-source background verification)
