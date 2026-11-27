@@ -132,7 +132,7 @@ async function handleInit(args) {
   const projectName = path.basename(targetDir);
 
   console.log(`\n${c.bold}${c.cyan}========================================${c.reset}`);
-  console.log(`${c.bold}${c.green}   AGENT HARNESS INITIALIZER v1.0.0     ${c.reset}`);
+  console.log(`${c.bold}${c.green}   AGENT HARNESS INITIALIZER v1.0.1     ${c.reset}`);
   console.log(`${c.bold}${c.cyan}========================================${c.reset}\n`);
 
   let chosenStack = null;
@@ -280,7 +280,7 @@ async function handleInit(args) {
 
   // 5. Write .agents/config.json
   const config = {
-    version: '1.0.0',
+    version: '1.0.1',
     stack: chosenStack,
     adapters: installedAdapters,
     installedAt: new Date().toISOString(),
@@ -410,7 +410,7 @@ async function main() {
       break;
     case '--version':
     case '-v':
-      console.log('1.0.0');
+      console.log('1.0.1');
       break;
     default:
       console.log(`${c.red}Unknown command: ${command}${c.reset}`);

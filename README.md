@@ -8,8 +8,10 @@ Without a harness, every new AI coding session starts with **amnesia**: the mode
 
 **Agent Harness** turns your repository itself into both the AI's **hard-harnessed knowledgebase** and its **executable engineering operating system** — regardless of which model or IDE you plug in (Antigravity, Claude Code, Codex, Cursor, VS Code Copilot).
 
-### 1. The Hard-Harnessed Knowledgebase (Persistent Brain)
-- `AGENTS.md` + `.agents/memory/` (Tier 1 invariants, Tier 2 domain chunks, Tier 3 service/schema catalogs) + `.agents/rules/` give every AI session a **version-controlled, model-agnostic institutional memory** that travels directly with the codebase.
+### 1. The Hard-Harnessed Knowledgebase (Stateful, Persistent Brain)
+- **Stateful at Two Levels:**
+  - **Project-Level Memory:** `AGENTS.md` + `.agents/memory/` (`conventions.md`, `domains/`, `lessons/`, `catalogs/`) + `MEMORY.md` / `MEMORY_ARCHIVE.md` give every AI session a **version-controlled, model-agnostic institutional memory** updated on every release.
+  - **Task-Level State Graph:** `.agent-work/<TASK_ID>/STATE.json` (managed deterministically by `manage-state.ts` / `manage-state.php`) tracks active pipeline nodes, rework counters, and human gate approvals — so you can clear context or start a fresh agent session and resume right where you left off.
 
 ### 2. The Executable Guardrails (Active Engineering OS)
 A static wiki alone is passive — models still drift, rush, or hallucinate. The harness enforces *how* the AI works on that knowledgebase:
@@ -145,12 +147,14 @@ your-project/
     │   ├── qa-validator.md
     │   ├── release-manager.md
     │   └── task-context-builder.md
+    ├── MEMORY.md              # Progressive tiered memory router
+    ├── MEMORY_ARCHIVE.md      # Cold storage archive (bounded hot window)
     ├── memory/                # Progressive tiered memory system
-    │   ├── conventions.md
-    │   ├── domain-chunk.md
     │   ├── INDEX.md
-    │   ├── models-schema.md
-    │   └── services.md
+    │   ├── conventions.md     # Tier 1: System invariants
+    │   ├── domains/           # Tier 2: Domain-scoped chunks
+    │   ├── lessons/           # Tier 2.5: Durable heuristics & post-mortems
+    │   └── catalogs/          # Tier 3: Models, schemas & services maps
     ├── rules/                 # Engineering and test rules
     │   ├── codebase-standards.md
     │   └── test-rules.md
