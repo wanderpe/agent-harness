@@ -281,3 +281,6 @@ After correction, QA must run again.
 Do not carry forward an old PASS.
 
 A code change invalidates the previous QA result.
+
+## Required Skills
+- caveman (token optimization: terse technical signal, zero fluff)

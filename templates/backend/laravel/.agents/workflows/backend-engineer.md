@@ -4,6 +4,14 @@ description:
 
 # Laravel Backend Feature Development
 
+## Token Optimization & Caveman Mode
+Execute all engineering phases under the `caveman` protocol:
+- Drop polite filler, hedging, and conversational preamble.
+- Deliver code, file paths, exact line slices, and technical reasoning directly.
+- Use `caveman-explore` for targeted codebase inspection without token bloat.
+
+---
+
 Guide a Laravel backend requirement through architecture,
 QA review, context-rich task generation, implementation,
 and manual verification.

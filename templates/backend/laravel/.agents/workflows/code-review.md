@@ -4,6 +4,15 @@ description:
 
 # Laravel Code Review & Logic Walkthrough
 
+## Severity Vectors (caveman-review format)
+Classify all review findings strictly using Caveman severity vectors:
+- `🔴 bug:` Defects that cause crashes, data corruption, or auth bypass.
+- `🟡 risk:` Performance bottlenecks, N+1 queries, unindexed DB columns, edge cases.
+- `🔵 nit:` Style discrepancies, redundant imports, minor naming.
+- `❓ q:` Questions about intent or unhandled edge cases.
+
+---
+
 Review existing Laravel code to understand its behavior,
 identify risks and issues, and explain the implementation
 clearly to the USER.

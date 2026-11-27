@@ -19,6 +19,7 @@
 2. **Schema Invariants**: Always declare explicit response schemas with `response_model` or type annotations.
 3. **Dependency Injection**: Use `Depends(...)` for auth, database sessions, and configuration.
 4. **Testing**: Maintain high test coverage with isolated test database fixtures and `pytest-asyncio`.
+5. **Token Optimization (Caveman Protocol)**: All agents operate under the `caveman` skill to maximize engineering signal and minimize token waste (terse output, zero filler, immediate code/diff delivery).
 
 ## Quick Commands
 - Dev: `uvicorn app.main:app --reload`

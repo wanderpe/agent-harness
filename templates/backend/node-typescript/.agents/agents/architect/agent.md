@@ -180,3 +180,6 @@ NEVER:
 * Introduce speculative or unnecessary architectural abstractions.
 * Skip the User Architecture Plan Review Gate.
 * Pass to Agent 2 without explicit user approval.
+
+## Required Skills
+- caveman (token optimization: terse technical signal, zero fluff)

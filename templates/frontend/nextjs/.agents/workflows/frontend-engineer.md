@@ -4,6 +4,14 @@ description:
 
 # Frontend Engineering Workflow
 
+## Token Optimization & Caveman Mode
+Execute all UI engineering phases under the `caveman` protocol:
+- Drop pleasantries, narrative summaries, and conversational preamble.
+- Use `caveman-explore` for rapid component discovery.
+- Output JSX, TypeScript types, and styling diffs directly.
+
+---
+
 Guide frontend requirements through codebase discovery,
 UI/UX design, responsive design, implementation planning,
 implementation, and manual verification.

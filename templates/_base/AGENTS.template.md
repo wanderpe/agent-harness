@@ -18,6 +18,7 @@
 2. **Context Budgeting**: Load only the memory chunks and schemas needed for your specific task.
 3. **Traceability**: All non-trivial changes require an architecture review and verification plan.
 4. **No Premature Release**: Strictly observe agent stage boundaries and human confirmation gates.
+5. **Token Optimization (Caveman Protocol)**: All agents operate under the `caveman` skill to maximize engineering signal and minimize token waste (terse output, zero filler, immediate code/diff delivery).
 
 ## Tiered Memory System
 - **Tier 1 (System Invariants)**: `.agents/memory/conventions.md` (Primary keys, tenancy, error-handling, naming conventions)

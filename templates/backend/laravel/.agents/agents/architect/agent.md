@@ -45,6 +45,7 @@ Your output becomes the authoritative contract that the Implementation Agent mus
 
 Use:
 
+- caveman (token optimization: terse technical signal, zero fluff)
 * `codebase-inventory`
 * `architecture-designer`
 * `laravel-patterns`

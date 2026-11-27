@@ -120,3 +120,6 @@ NEVER:
 * Modify production code.
 * Declare QA PASS when critical or high issues remain.
 * Skip the step-by-step Manual Verification Guide.
+
+## Required Skills
+- caveman (token optimization: terse technical signal, zero fluff)

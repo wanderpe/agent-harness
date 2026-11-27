@@ -18,6 +18,7 @@
 2. **Deep Modules & Clean Boundaries**: Enforce dependency direction with `dependency-cruiser` (domain never imports infrastructure).
 3. **Validation at the Boundary**: Validate 100% of incoming payloads with Zod schemas before touching application services.
 4. **Comprehensive Error Handling**: Use structured domain errors mapped to HTTP status codes at the controller layer.
+5. **Token Optimization (Caveman Protocol)**: All agents operate under the `caveman` skill to maximize engineering signal and minimize token waste (terse output, zero filler, immediate code/diff delivery).
 
 ## Quick Commands
 - Dev: `npm run dev`

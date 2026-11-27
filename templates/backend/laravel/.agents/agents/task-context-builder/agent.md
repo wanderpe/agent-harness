@@ -139,3 +139,6 @@ NEVER:
 * Leave critical business rules or permissions ambiguous.
 * Skip the User Review Gate 0.
 * Alter the structure of the mandatory task template.
+
+## Required Skills
+- caveman (token optimization: terse technical signal, zero fluff)

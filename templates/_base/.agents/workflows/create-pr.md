@@ -28,7 +28,7 @@ Invoke `call_mcp_tool` with `ToolName: "create_branch"`:
 - `branch`: New branch name (e.g., `feat/user-wallet-transaction-resource`)
 - `from_branch`: Base branch name (e.g., `main`)
 
-### Step 3: Commit Code with a Context-Rich Commit Message
+### Step 3: Commit Code with Caveman Conventional Commit (caveman-commit)
 Invoke `call_mcp_tool` with `ToolName: "push_files"`:
 - `owner`: Repository owner
 - `repo`: Repository name

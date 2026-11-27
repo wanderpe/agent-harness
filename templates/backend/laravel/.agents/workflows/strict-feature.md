@@ -23,6 +23,10 @@ Load and apply:
 - Skill: `laravel-patterns`
 - Skill: `laravel-specialist`
 - Skill: `qa-engineer`
+- Skill: `caveman`
+- Skill: `caveman-explore`
+- Skill: `caveman-review`
+- Skill: `caveman-commit`
 - Skill: `documentation-agent`
 
 ---

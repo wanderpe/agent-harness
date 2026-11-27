@@ -20,6 +20,7 @@
 2. **Atomic Writes**: Wrap all multi-model database writes in `DB::transaction()`.
 3. **Optimized Queries**: Prevent N+1 queries using eager loading (`with()`), proper indexes, and `chunkById()` for large batches.
 4. **Strict Types**: Use `declare(strict_types=1);` and enforce PHPStan baseline checks.
+5. **Token Optimization (Caveman Protocol)**: All agents operate under the `caveman` skill to maximize engineering signal and minimize token waste (terse output, zero filler, immediate code/diff delivery).
 
 ## Skills & Reference Rules
 Review rules under `.agents/skills/laravel-best-practices/rules/` for comprehensive patterns:

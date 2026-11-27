@@ -20,6 +20,7 @@
 2. **Deterministic UI Testing**: Test key user flows using Playwright and webapp-testing skills.
 3. **Responsive & Accessible**: Strict color contrast, keyboard navigation, and semantic HTML (a11y).
 4. **Token Management**: Refresh tokens and credentials must be handled through HTTP-only cookies or dedicated services.
+5. **Token Optimization (Caveman Protocol)**: All agents operate under the `caveman` skill to maximize engineering signal and minimize token waste (terse output, zero filler, immediate code/diff delivery).
 
 ## Multi-Agent Workflow
 Refer to `.agents/workflows/multiple-agent-workflow.md` or `.agents/workflows/frontend-engineer.md` for execution steps.

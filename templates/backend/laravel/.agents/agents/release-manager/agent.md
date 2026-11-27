@@ -274,3 +274,6 @@ NEVER:
 If implementation defects remain:
 
 STOP and return control to the Implementation Agent.
+
+## Required Skills
+- caveman (token optimization: terse technical signal, zero fluff)

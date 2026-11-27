@@ -347,3 +347,6 @@ CODE_REVIEW_STATUS: PASS
 Then hand control to QA.
 
 Do not declare the feature complete.
+
+## Required Skills
+- caveman (token optimization: terse technical signal, zero fluff)

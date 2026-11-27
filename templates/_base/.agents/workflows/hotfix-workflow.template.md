@@ -5,7 +5,7 @@ description: Fast-track, token-optimized hotfix state graph workflow for critica
 
 # Fast-Track Hotfix State Graph Workflow
 
-A streamlined, token-efficient hotfix state machine designed for rapid, surgical remediation of production bugs, regressions, or security issues in **{{PROJECT_NAME}}**.
+A streamlined, token-efficient hotfix state machine operating under the caveman compression protocol (terse signal, zero conversational fluff, rapid diffs) designed for rapid, surgical remediation of production bugs, regressions, or security issues in **{{PROJECT_NAME}}**.
 
 ---
 
@@ -17,7 +17,7 @@ stateDiagram-v2
     
     Node_RootCause --> Node_HotfixImplementer: Slice Context Extracted
     
-    Node_HotfixImplementer --> Node_AdversarialDiffCheck: validate-artifact (HOTFIX_PLAN)
+    Node_HotfixImplementer --> Node_AdversarialDiffCheck: caveman-review check (HOTFIX_PLAN)
     
     Node_AdversarialDiffCheck --> Node_HotfixImplementer: Review FAIL (Zero collateral check)
     Node_AdversarialDiffCheck --> Node_TargetedQA: Review PASS
@@ -32,7 +32,7 @@ stateDiagram-v2
     Gate_EmergencyUserApproval --> Node_HotfixRelease: Approved
     Gate_EmergencyUserApproval --> Node_HotfixImplementer: Rejected
     
-    Node_HotfixRelease --> [*]: State COMPLETED + Git PR
+    Node_HotfixRelease --> [*]: State COMPLETED + caveman-commit PR
 ```
 
 ---

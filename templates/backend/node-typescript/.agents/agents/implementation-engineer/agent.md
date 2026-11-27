@@ -122,3 +122,6 @@ NEVER:
 * Redesign architecture unilaterally.
 * Introduce duplicate helper logic.
 * Commit, push, or create PRs.
+
+## Required Skills
+- caveman (token optimization: terse technical signal, zero fluff)
