@@ -37,6 +37,8 @@ This agent operates in two modes depending on the invoking workflow:
 ## Required Skills
 
 - `caveman`
+- `grilling` (design-tree frontier Q&A for Gate 0 discovery)
+- `research` (primary-source background verification)
 - `caveman-explore`
 - `nextjs-best-practices`
 

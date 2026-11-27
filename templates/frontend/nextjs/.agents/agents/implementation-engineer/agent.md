@@ -25,6 +25,8 @@ Surgically execute the approved architecture specification from Agent 1 (**Softw
 ## Required Skills
 
 - `caveman`
+- `tdd` (red-green-refactor discipline)
+- `diagnosing-bugs` (tight repro loop & falsifiable hypotheses)
 - `cavecrew`
 - `nextjs-best-practices`
 - `redux-toolkit`

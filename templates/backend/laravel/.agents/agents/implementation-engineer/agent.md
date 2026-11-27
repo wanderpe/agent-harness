@@ -59,6 +59,8 @@ Do not implement from the user's requirement alone.
 
 Use:
 
+- `tdd` (red-green-refactor discipline)
+- `diagnosing-bugs` (tight repro loop & falsifiable hypotheses)
 - caveman (token optimization: terse technical signal, zero fluff)
 * `laravel-patterns`
 * `laravel-specialist`

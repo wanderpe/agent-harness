@@ -81,3 +81,11 @@ Invoke `call_mcp_tool` with `ToolName: "create_pull_request"`:
 ---
 *Created automatically via GitHub MCP Server*
 ```
+
+---
+
+## PR Body Structure (`pr` skill)
+Format the PR description using the built-in `.agents/skills/pr/SKILL.md` template:
+- **Summary**: Concise diagram, diff-sketch, or call tree.
+- **Evidence**: Concrete Before / After test output or screenshots.
+- **Merge Danger**: One-way vs two-way door + Blast Radius.

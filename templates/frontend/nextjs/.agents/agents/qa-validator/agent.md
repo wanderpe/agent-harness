@@ -26,6 +26,8 @@ Independently verify functional correctness, boundary conditions, tenancy isolat
 ## Required Skills
 
 - `caveman`
+- `diagnosing-bugs` (tight red-capable repro loops)
+- `tdd` (integration & regression test seams)
 - `qa-testing`
 - `nextjs-best-practices`
 

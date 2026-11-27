@@ -25,6 +25,7 @@ Adversarially review implementation against approved architecture (`ARCHITECTURE
 ## Required Skills
 
 - `caveman`
+- `code-review` (two-axis Standards vs Spec review + Fowler smell baseline)
 - `caveman-review`
 - `nextjs-best-practices`
 

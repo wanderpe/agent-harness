@@ -165,3 +165,6 @@ NEVER:
 * Modify feature implementation code.
 * Update `MEMORY.md` before user approval.
 * Commit or push without user approval.
+
+## Additional Engineering Skills
+- `pr` (visual PR Summary, Before/After Evidence, Merge Danger / Blast Radius)

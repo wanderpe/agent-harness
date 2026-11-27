@@ -283,4 +283,6 @@ Do not carry forward an old PASS.
 A code change invalidates the previous QA result.
 
 ## Required Skills
+- `diagnosing-bugs` (tight red-capable repro loops)
+- `tdd` (integration & regression test seams)
 - caveman (token optimization: terse technical signal, zero fluff)

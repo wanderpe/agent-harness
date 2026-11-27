@@ -63,13 +63,11 @@ Avoids token bloat by organizing memory into progressive tiers:
 - **Tier 3 (Catalogs)** (`.agents/memory/services.md`, `models-schema.md`): Dynamic API and DB schemas.
 - **Tier 4 (Cold Archive)** (`.agents/MEMORY_ARCHIVE.md`): Historical releases.
 
-### 3. Built-In Token Optimization (Caveman Engine)
-Every scaffolded project automatically comes with the full **Caveman optimization toolchain** pre-installed directly inside `.agents/skills/` with zero extra steps:
-- **`caveman`**: Ultra-compressed communication mode (cuts output tokens by 65% while keeping full technical rigor).
-- **`cavecrew`**: Multi-agent delegation contracts.
-- **`caveman-compress` & `caveman-optimize`**: Automated prompt and context compression benchmarks.
-- **`caveman-explore`**: High-speed, read-only cold-start exploration without token drift.
-- **`caveman-adapter.md`**: Plug-and-play workflow in `.agents/workflows/` to adapt existing agents.
+### 3. Built-In Token Optimization & Engineering Skills
+Every scaffolded project automatically comes with two built-in skill suites pre-installed directly inside `.agents/skills/` with zero extra steps:
+
+- **Caveman Optimization Engine (14 skills)**: `caveman`, `cavecrew`, `caveman-commit`, `caveman-compress`, `caveman-explore`, `caveman-review`, `caveman-optimize`, `caveman-learn`, and utilities, plus the `caveman-adapter.md` workflow.
+- **Core Engineering Skills (14 universal + 2 JS/TS)**: `diagnosing-bugs`, `code-review` (two-axis Standards vs Spec + Fowler smells), `tdd`, `codebase-design`, `domain-modeling`, `grilling`, `pr`, `research`, `retro`, `improve-codebase-architecture`, `prototype`, `handoff`, `wizard`, `writing-for-agents`, plus `setup-pre-commit` & `setup-ts-deep-modules` for JS/TS stacks. See [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) for MIT attribution.
 
 ---
 

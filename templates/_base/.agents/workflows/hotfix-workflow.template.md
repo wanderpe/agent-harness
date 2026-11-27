@@ -45,7 +45,7 @@ stateDiagram-v2
    php .agents/scripts/manage-state.php --action=init --task=hotfix/<slug> --complexity=SMALL
    ```
 2. **Context Policy**: Read error stack trace / bug description + exact defective file.
-3. **Action**: Pinpoint root cause using line slice reads (`view_file` with line range).
+3. **Action**: Follow the `diagnosing-bugs` skill (build a tight red-capable repro loop, minimise, rank 3-5 falsifiable hypotheses) and pinpoint root cause using line slice reads (`view_file` with line range).
 4. **Output**: `.agent-work/hotfix-<slug>/HOTFIX_CONTEXT.md`.
 5. **Transition**:
    ```bash

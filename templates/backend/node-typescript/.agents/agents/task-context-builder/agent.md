@@ -154,3 +154,7 @@ NEVER:
 * Leave critical business rules or permissions ambiguous.
 * Skip User Review Gate 0.
 * Alter the mandatory task template structure.
+
+## Additional Engineering Skills
+- `grilling` (design-tree frontier Q&A for Gate 0 discovery)
+- `research` (primary-source background verification)

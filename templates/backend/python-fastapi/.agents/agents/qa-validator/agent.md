@@ -122,4 +122,6 @@ NEVER:
 * Skip the step-by-step Manual Verification Guide.
 
 ## Required Skills
+- `diagnosing-bugs` (tight red-capable repro loops)
+- `tdd` (integration & regression test seams)
 - caveman (token optimization: terse technical signal, zero fluff)

@@ -124,4 +124,6 @@ NEVER:
 * Commit, push, or create PRs.
 
 ## Required Skills
+- `tdd` (red-green-refactor discipline)
+- `diagnosing-bugs` (tight repro loop & falsifiable hypotheses)
 - caveman (token optimization: terse technical signal, zero fluff)

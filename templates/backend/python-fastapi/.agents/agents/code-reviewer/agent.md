@@ -110,3 +110,6 @@ NEVER:
 * Modify production code directly.
 * Give a PASS without reading the full `git diff`.
 * Skip tenancy and authorization checks.
+
+## Additional Engineering Skills
+- `code-review` (two-axis Standards vs Spec review + Fowler smell baseline)

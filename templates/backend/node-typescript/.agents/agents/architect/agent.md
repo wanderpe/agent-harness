@@ -182,4 +182,7 @@ NEVER:
 * Pass to Agent 2 without explicit user approval.
 
 ## Required Skills
+- `codebase-design` (deep modules, seams, locality vocabulary)
+- `domain-modeling` (GLOSSARY.md & sparse ADRs)
+- `research` (primary-source verification)
 - caveman (token optimization: terse technical signal, zero fluff)

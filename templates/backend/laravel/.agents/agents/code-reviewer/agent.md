@@ -349,4 +349,5 @@ Then hand control to QA.
 Do not declare the feature complete.
 
 ## Required Skills
+- `code-review` (two-axis Standards vs Spec review + Fowler smell baseline)
 - caveman (token optimization: terse technical signal, zero fluff)
