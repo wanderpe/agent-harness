@@ -166,5 +166,27 @@ To use directly from GitHub without publishing:
 npx degit <your-github-username>/agent-harness/templates/_base/.agents .agents
 ```
 
+## 📚 References, Inspiration & Credits
+
+This harness synthesizes ideas, architectures, and open-source skills from the following resources:
+
+### Core Philosophy & Strategic Engineering
+- **[How to Actually Code with AI (ft. Matt Pocock)](https://www.youtube.com/watch?v=mU8WKII1gpk)** — NetworkChuck interview with Matt Pocock on tactical vs. strategic programming, keeping context in the "Smart Zone", grilling requirements before coding, leading words, and reviewing by merge danger.
+- **[How to Be More Ambitious: A Tutorial for Humans with Models](https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/)** — Felix Rieseberg's framework on the four dimensions of model ambition (**Speed, Altitude, Depth, Range**), the Depth Prompt, and the **Outside Judge** invariant (never letting the model grade its own work).
+
+### Bundled & Adapted Open-Source Skills
+- **[mattpocock/skills](https://github.com/mattpocock/skills)** *(MIT License)* — Engineering & productivity skills (`diagnosing-bugs`, `code-review`, `tdd`, `codebase-design`, `domain-modeling`, `grilling`, `pr`, `writing-for-agents`, `prototype`, `setup-pre-commit`, `setup-ts-deep-modules`, `retro`, `research`, `handoff`, `wizard`, `improve-codebase-architecture`).
+- **[JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman)** — Token-compression communication engine (`caveman`, `cavecrew`, `caveman-explore`, `caveman-review`, `caveman-commit`, and optional compression utilities).
+- **[humanlayer/skills (`show-me`)](https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md)** — Dex Horthy / Humanlayer visual PR body & Merge Danger format (credited via `pr` skill).
+- **[google-labs-code/stitch-skills](https://github.com/google-labs-code/stitch-skills)** — `shadcn-ui` component patterns and verification scripts.
+- **[nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** — `ui-ux-pro-max` frontend design intelligence.
+- **[sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills)** — `nextjs-best-practices` App Router guidelines.
+- **[mindrally/skills](https://github.com/mindrally/skills)** — `redux-toolkit` state management patterns.
+- **[patricio0312rev/skills](https://github.com/patricio0312rev/skills)** — `framer-motion-animator` animation patterns.
+
+See [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) for license details.
+
+---
+
 ## License
 MIT License. Free for open source and commercial use.
