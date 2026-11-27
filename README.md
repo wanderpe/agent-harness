@@ -131,6 +131,19 @@ npx create-agent-harness --stack node-typescript
 npx create-agent-harness --stack python-fastapi
 ```
 
+### Lifecycle Commands (`doctor` & `update`)
+Keep your harness healthy and up to date across every repo:
+```bash
+# Audit .agents/ health, Smart-Zone token budget, IDE skill links & Live QA prerequisites
+npx create-agent-harness doctor
+
+# Safely upgrade core agents, skills, scripts & workflows WITHOUT touching your memory/ or rules/
+npx create-agent-harness update
+
+# Preview an update without modifying files
+npx create-agent-harness update --dry-run
+```
+
 ### Recommended Live QA Prerequisites (MCP & CLI)
 To unlock the closed-loop live QA & hotfix workflows (`live-test-and-hotfix.md` and `api-test-and-hotfix.md`), ensure the matching tool + MCP server is available:
 - **Frontend (`nextjs`)**: Install Playwright (`npm i -D @playwright/test && npx playwright install`) and enable the **Playwright MCP server** (`@playwright/mcp`) in your AI IDE.

@@ -24,6 +24,7 @@ const c = {
 };
 
 const PKG_ROOT = path.resolve(__dirname, '..');
+const PKG_VERSION = require(path.join(PKG_ROOT, 'package.json')).version;
 const TEMPLATES_ROOT = path.join(PKG_ROOT, 'templates');
 const SKILLS_ROOT = path.join(PKG_ROOT, 'skills');
 
@@ -55,7 +56,8 @@ const STACKS = {
   }
 };
 
-function copyRecursiveSync(src, dest, replacements = {}) {
+function copyRecursiveSync(src, dest, replacements = {}, options = {}) {
+  const { overwrite = true } = options;
   const exists = fs.existsSync(src);
   const stats = exists && fs.statSync(src);
   const isDirectory = exists && stats.isDirectory();
@@ -68,7 +70,8 @@ function copyRecursiveSync(src, dest, replacements = {}) {
       copyRecursiveSync(
         path.join(src, childItemName),
         path.join(dest, childItemName),
-        replacements
+        replacements,
+        options
       );
     });
   } else if (exists) {
@@ -86,6 +89,10 @@ function copyRecursiveSync(src, dest, replacements = {}) {
       destFile = destFile.replace('.template.php', '.php');
     }
 
+    if (!overwrite && fs.existsSync(destFile)) {
+      return;
+    }
+
     if (isText) {
       let content = fs.readFileSync(src, 'utf8');
       for (const [key, value] of Object.entries(replacements)) {
@@ -96,6 +103,43 @@ function copyRecursiveSync(src, dest, replacements = {}) {
       fs.copyFileSync(src, destFile);
     }
   }
+}
+
+function hasCommand(cmd) {
+  const checker = process.platform === 'win32' ? 'where' : 'which';
+  const res = spawnSync(checker, [cmd], { stdio: 'ignore' });
+  return res.status === 0;
+}
+
+function hasPkgDep(targetDir, depNames) {
+  const pkgPath = path.join(targetDir, 'package.json');
+  if (!fs.existsSync(pkgPath)) return false;
+  try {
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    const allDeps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+    return depNames.some(d => Boolean(allDeps[d]));
+  } catch (e) {
+    return false;
+  }
+}
+
+function tryLinkSkills(targetDir, linkDir) {
+  try {
+    const parent = path.dirname(linkDir);
+    if (!fs.existsSync(parent)) fs.mkdirSync(parent, { recursive: true });
+    if (!fs.existsSync(linkDir)) {
+      const linkType = process.platform === 'win32' ? 'junction' : 'dir';
+      const targetSkills = path.join(targetDir, '.agents', 'skills');
+      const linkTarget = process.platform === 'win32'
+        ? targetSkills
+        : path.relative(parent, targetSkills);
+      fs.symlinkSync(linkTarget, linkDir, linkType);
+      return true;
+    }
+  } catch (e) {
+    // Graceful fallback when symlink permissions are restricted
+  }
+  return false;
 }
 
 function detectProjectStack(targetDir) {
@@ -133,7 +177,7 @@ async function handleInit(args) {
   const projectName = path.basename(targetDir);
 
   console.log(`\n${c.bold}${c.cyan}========================================${c.reset}`);
-  console.log(`${c.bold}${c.green}   AGENT HARNESS INITIALIZER v1.0.3     ${c.reset}`);
+  console.log(`${c.bold}${c.green}   AGENT HARNESS INITIALIZER v${PKG_VERSION}     ${c.reset}`);
   console.log(`${c.bold}${c.cyan}========================================${c.reset}\n`);
 
   let chosenStack = null;
@@ -226,31 +270,12 @@ async function handleInit(args) {
   const adaptersSrcDir = path.join(TEMPLATES_ROOT, '_base', 'adapters');
   const installedAdapters = ['antigravity', 'codex']; // Native AGENTS.md + .agents/ support
 
-  function tryLinkSkills(linkDir) {
-    try {
-      const parent = path.dirname(linkDir);
-      if (!fs.existsSync(parent)) fs.mkdirSync(parent, { recursive: true });
-      if (!fs.existsSync(linkDir)) {
-        const linkType = process.platform === 'win32' ? 'junction' : 'dir';
-        const targetSkills = path.join(targetDir, '.agents', 'skills');
-        const linkTarget = process.platform === 'win32'
-          ? targetSkills
-          : path.relative(parent, targetSkills);
-        fs.symlinkSync(linkTarget, linkDir, linkType);
-        return true;
-      }
-    } catch (e) {
-      // Graceful fallback when symlink permissions are restricted
-    }
-    return false;
-  }
-
   if (enabledAdapters.includes('claude')) {
     const claudeMd = path.join(targetDir, 'CLAUDE.md');
     if (!fs.existsSync(claudeMd)) {
       copyRecursiveSync(path.join(adaptersSrcDir, 'CLAUDE.template.md'), claudeMd, replacements);
     }
-    tryLinkSkills(path.join(targetDir, '.claude', 'skills'));
+    tryLinkSkills(targetDir, path.join(targetDir, '.claude', 'skills'));
     installedAdapters.push('claude');
   }
 
@@ -261,7 +286,7 @@ async function handleInit(args) {
       if (!fs.existsSync(cursorRuleDir)) fs.mkdirSync(cursorRuleDir, { recursive: true });
       copyRecursiveSync(path.join(adaptersSrcDir, 'cursor-agent-harness.mdc'), cursorRuleFile, replacements);
     }
-    tryLinkSkills(path.join(targetDir, '.cursor', 'skills'));
+    tryLinkSkills(targetDir, path.join(targetDir, '.cursor', 'skills'));
     installedAdapters.push('cursor');
   }
 
@@ -281,7 +306,7 @@ async function handleInit(args) {
 
   // 5. Write .agents/config.json
   const config = {
-    version: '1.0.3',
+    version: PKG_VERSION,
     stack: chosenStack,
     adapters: installedAdapters,
     installedAt: new Date().toISOString(),
@@ -316,27 +341,9 @@ async function handleInit(args) {
   console.log(`\n${c.bold}${c.green}✔ Ready across Antigravity, Claude Code, Codex, Cursor, and VS Code Copilot with zero duplication!${c.reset}`);
 
   // 6. Prerequisite Check for Live QA Loops (Playwright / Postman / Newman)
-  function hasCommand(cmd) {
-    const checker = process.platform === 'win32' ? 'where' : 'which';
-    const res = spawnSync(checker, [cmd], { stdio: 'ignore' });
-    return res.status === 0;
-  }
-
-  function hasPkgDep(depNames) {
-    const pkgPath = path.join(targetDir, 'package.json');
-    if (!fs.existsSync(pkgPath)) return false;
-    try {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-      const allDeps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
-      return depNames.some(d => Boolean(allDeps[d]));
-    } catch (e) {
-      return false;
-    }
-  }
-
   const warnings = [];
   if (STACKS[chosenStack].category === 'frontend') {
-    const hasPlaywright = hasPkgDep(['playwright', '@playwright/test']) || hasCommand('playwright');
+    const hasPlaywright = hasPkgDep(targetDir, ['playwright', '@playwright/test']) || hasCommand('playwright');
     if (!hasPlaywright) {
       warnings.push(
         `Playwright not detected (needed for live-web-tester & live-test-and-hotfix.md).\n` +
@@ -345,7 +352,7 @@ async function handleInit(args) {
       );
     }
   } else if (STACKS[chosenStack].category === 'backend') {
-    const hasPostmanOrNewman = hasCommand('newman') || hasCommand('postman') || hasPkgDep(['newman']);
+    const hasPostmanOrNewman = hasCommand('newman') || hasCommand('postman') || hasPkgDep(targetDir, ['newman']);
     if (!hasPostmanOrNewman) {
       warnings.push(
         `Postman CLI / Newman not detected (needed for live-api-tester & api-test-and-hotfix.md).\n` +
@@ -360,6 +367,269 @@ async function handleInit(args) {
     warnings.forEach(w => console.log(`  ${c.yellow}•${c.reset} ${w}`));
   }
   console.log('');
+}
+
+function handleDoctor() {
+  const targetDir = process.cwd();
+  const agentsDir = path.join(targetDir, '.agents');
+
+  console.log(`\n${c.bold}${c.cyan}========================================${c.reset}`);
+  console.log(`${c.bold}${c.green}     AGENT HARNESS DOCTOR v${PKG_VERSION}       ${c.reset}`);
+  console.log(`${c.bold}${c.cyan}========================================${c.reset}\n`);
+
+  if (!fs.existsSync(agentsDir)) {
+    console.log(`${c.red}✖ No .agents/ directory found in ${targetDir}.${c.reset}`);
+    console.log(`  Run ${c.cyan}npx create-agent-harness${c.reset} to scaffold the harness first.\n`);
+    process.exit(1);
+  }
+
+  let issues = 0;
+  let warns = 0;
+  const pass = (msg) => console.log(`  ${c.green}✔${c.reset} ${msg}`);
+  const warn = (msg) => { warns++; console.log(`  ${c.yellow}⚠${c.reset} ${msg}`); };
+  const fail = (msg) => { issues++; console.log(`  ${c.red}✖${c.reset} ${msg}`); };
+
+  // 1. Config & Version Check
+  console.log(`${c.bold}1. Harness Manifest${c.reset}`);
+  let config = null;
+  const configPath = path.join(agentsDir, 'config.json');
+  if (fs.existsSync(configPath)) {
+    try {
+      config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      const ver = config.version || 'unknown';
+      if (ver !== PKG_VERSION) {
+        warn(`Installed version: v${ver} (latest: v${PKG_VERSION}) — run ${c.cyan}npx create-agent-harness update${c.reset}`);
+      } else {
+        pass(`Version v${ver} (up to date) | Stack: ${config.stack || 'unknown'}`);
+      }
+    } catch (e) {
+      fail(`.agents/config.json is invalid JSON`);
+    }
+  } else {
+    warn(`.agents/config.json missing — run ${c.cyan}npx create-agent-harness update${c.reset} to register manifest`);
+  }
+
+  // 2. Core Structure & Stateful Memory
+  console.log(`\n${c.bold}2. Core Structure & Stateful Memory${c.reset}`);
+  const agentsMdPath = path.join(targetDir, 'AGENTS.md');
+  if (fs.existsSync(agentsMdPath)) {
+    const size = fs.statSync(agentsMdPath).size;
+    const estTok = Math.round(size / 4);
+    if (estTok > 1500) {
+      warn(`AGENTS.md is large (~${estTok} tokens) — move detailed rules into .agents/memory/ or .agents/rules/`);
+    } else {
+      pass(`AGENTS.md present (~${estTok} tokens)`);
+    }
+  } else {
+    fail(`Missing root AGENTS.md`);
+  }
+
+  const coreRoles = ['task-context-builder', 'architect', 'implementation-engineer', 'code-reviewer', 'qa-validator', 'release-manager'];
+  const missingRoles = coreRoles.filter(r => !fs.existsSync(path.join(agentsDir, 'agents', r, 'agent.md')));
+  if (missingRoles.length === 0) {
+    pass(`All 6 core sub-agents present`);
+  } else {
+    fail(`Missing core sub-agents: ${missingRoles.join(', ')}`);
+  }
+
+  const hasIndex = fs.existsSync(path.join(agentsDir, 'memory', 'INDEX.md'));
+  const hasConv = fs.existsSync(path.join(agentsDir, 'memory', 'conventions.md'));
+  const hasArchive = fs.existsSync(path.join(agentsDir, 'MEMORY_ARCHIVE.md'));
+  if (hasIndex && hasConv) {
+    pass(`Tiered memory present (INDEX.md, conventions.md${hasArchive ? ', MEMORY_ARCHIVE.md' : ''})`);
+  } else {
+    warn(`Incomplete tiered memory — run ${c.cyan}npx create-agent-harness update${c.reset} to scaffold missing files`);
+  }
+
+  // 3. Smart-Zone Context Budget (Always-Loaded Skill Metadata)
+  console.log(`\n${c.bold}3. Smart-Zone Context Budget${c.reset}`);
+  const skillsDir = path.join(agentsDir, 'skills');
+  let skillCount = 0;
+  let fmChars = 0;
+  if (fs.existsSync(skillsDir)) {
+    const dirs = fs.readdirSync(skillsDir).filter(f => fs.statSync(path.join(skillsDir, f)).isDirectory());
+    dirs.forEach(d => {
+      const md = path.join(skillsDir, d, 'SKILL.md');
+      if (fs.existsSync(md)) {
+        skillCount++;
+        const raw = fs.readFileSync(md, 'utf8');
+        const m = raw.match(/^---\r?\n([\s\S]+?)\r?\n---/);
+        if (m) fmChars += m[1].length;
+      }
+    });
+  }
+  const estSkillTokens = Math.round(fmChars / 4);
+  if (estSkillTokens <= 2000) {
+    pass(`${skillCount} skills (~${estSkillTokens} always-loaded tokens/turn — Smart Zone healthy)`);
+  } else if (estSkillTokens <= 3000) {
+    warn(`${skillCount} skills (~${estSkillTokens} tokens/turn — getting heavy; prune unused skills)`);
+  } else {
+    fail(`${skillCount} skills (~${estSkillTokens} tokens/turn — context bloat risk! Prune unused skills)`);
+  }
+
+  // 4. Cross-Agent Adapter Integrity
+  console.log(`\n${c.bold}4. Cross-Agent Adapters${c.reset}`);
+  const claudeMd = fs.existsSync(path.join(targetDir, 'CLAUDE.md'));
+  const claudeSkills = fs.existsSync(path.join(targetDir, '.claude', 'skills'));
+  if (claudeMd && claudeSkills) pass(`Claude Code (CLAUDE.md + .claude/skills link)`);
+  else if (claudeMd) warn(`Claude Code (CLAUDE.md present, .claude/skills link missing)`);
+  else console.log(`  ${c.gray}– Claude Code adapter not installed${c.reset}`);
+
+  const cursorRule = fs.existsSync(path.join(targetDir, '.cursor', 'rules', 'agent-harness.mdc'));
+  const cursorSkills = fs.existsSync(path.join(targetDir, '.cursor', 'skills'));
+  if (cursorRule && cursorSkills) pass(`Cursor (.cursor/rules/agent-harness.mdc + .cursor/skills link)`);
+  else if (cursorRule) warn(`Cursor (rule present, .cursor/skills link missing)`);
+  else console.log(`  ${c.gray}– Cursor adapter not installed${c.reset}`);
+
+  const copilotMd = fs.existsSync(path.join(targetDir, '.github', 'copilot-instructions.md'));
+  if (copilotMd) pass(`VS Code / GitHub Copilot (.github/copilot-instructions.md)`);
+  else console.log(`  ${c.gray}– GitHub Copilot adapter not installed${c.reset}`);
+
+  // 5. Live QA Prerequisites
+  console.log(`\n${c.bold}5. Live QA Prerequisites${c.reset}`);
+  const stackKey = (config && config.stack && STACKS[config.stack]) ? config.stack : detectProjectStack(targetDir);
+  if (stackKey && STACKS[stackKey]) {
+    if (STACKS[stackKey].category === 'frontend') {
+      const hasPw = hasPkgDep(targetDir, ['playwright', '@playwright/test']) || hasCommand('playwright');
+      if (hasPw) pass(`Playwright detected (live-web-tester ready)`);
+      else warn(`Playwright not detected — run: ${c.cyan}npm i -D @playwright/test && npx playwright install${c.reset} + enable ${c.cyan}@playwright/mcp${c.reset}`);
+    } else if (STACKS[stackKey].category === 'backend') {
+      const hasPm = hasCommand('newman') || hasCommand('postman') || hasPkgDep(targetDir, ['newman']);
+      if (hasPm) pass(`Postman CLI / Newman detected (live-api-tester ready)`);
+      else warn(`Postman CLI / Newman not detected — run: ${c.cyan}npm i -g newman${c.reset} + enable ${c.cyan}Postman MCP${c.reset}`);
+    } else {
+      pass(`Base stack (no stack-specific live QA CLI required)`);
+    }
+  }
+
+  console.log('');
+  if (issues > 0) {
+    console.log(`${c.red}${c.bold}Doctor finished with ${issues} error(s) and ${warns} warning(s).${c.reset}\n`);
+    process.exit(1);
+  } else if (warns > 0) {
+    console.log(`${c.yellow}${c.bold}Doctor finished with ${warns} warning(s) — harness is usable.${c.reset}\n`);
+  } else {
+    console.log(`${c.green}${c.bold}✔ All checks passed — your agent harness is razor-sharp!${c.reset}\n`);
+  }
+}
+
+function handleUpdate(args) {
+  const targetDir = process.cwd();
+  const targetAgentsDir = path.join(targetDir, '.agents');
+  const projectName = path.basename(targetDir);
+  const dryRun = args.includes('--dry-run');
+
+  console.log(`\n${c.bold}${c.cyan}========================================${c.reset}`);
+  console.log(`${c.bold}${c.green}     AGENT HARNESS UPDATER v${PKG_VERSION}      ${c.reset}`);
+  console.log(`${c.bold}${c.cyan}========================================${c.reset}\n`);
+
+  if (!fs.existsSync(targetAgentsDir)) {
+    console.log(`${c.red}Error:${c.reset} No .agents/ directory found. Run ${c.cyan}npx create-agent-harness${c.reset} first.\n`);
+    process.exit(1);
+  }
+
+  let existingConfig = {};
+  const configPath = path.join(targetAgentsDir, 'config.json');
+  if (fs.existsSync(configPath)) {
+    try { existingConfig = JSON.parse(fs.readFileSync(configPath, 'utf8')); } catch (e) {}
+  }
+
+  // Determine stack (--stack flag > config.json > auto-detect > base-only)
+  let stack = existingConfig.stack || null;
+  const stackIdx = args.indexOf('--stack');
+  if (stackIdx !== -1 && args[stackIdx + 1] && STACKS[args[stackIdx + 1].toLowerCase()]) {
+    stack = args[stackIdx + 1].toLowerCase();
+  }
+  if (!stack || !STACKS[stack]) {
+    stack = detectProjectStack(targetDir) || 'base-only';
+  }
+
+  const prevVer = existingConfig.version || 'unknown';
+  console.log(`${c.blue}→ Updating stack:${c.reset} ${c.bold}${stack}${c.reset} (${c.gray}v${prevVer} → v${PKG_VERSION}${c.reset})`);
+  if (dryRun) {
+    console.log(`${c.yellow}→ DRY RUN — no files will be modified.${c.reset}\n`);
+  }
+
+  const replacements = {
+    '{{PROJECT_NAME}}': projectName,
+    '{{WORKSPACE_ROOT}}': targetDir.replace(/\\/g, '/'),
+  };
+
+  const baseAgentsSrc = path.join(TEMPLATES_ROOT, '_base', '.agents');
+  const stackAgentsSrc = (STACKS[stack].path && fs.existsSync(path.join(STACKS[stack].path, '.agents')))
+    ? path.join(STACKS[stack].path, '.agents')
+    : null;
+
+  // Managed directories (safe to refresh from templates)
+  const managedDirs = ['agents', 'skills', 'scripts', 'templates', 'workflows'];
+  const managedFiles = ['context-policy.template.md', 'master-agent.md'];
+
+  // User-owned directories/files (ONLY add missing files, NEVER overwrite user edits)
+  const preservedDirs = ['memory', 'rules'];
+  const preservedFiles = ['memory.template.md', 'MEMORY_ARCHIVE.template.md'];
+
+  if (!dryRun) {
+    managedDirs.forEach(dir => {
+      const baseSrc = path.join(baseAgentsSrc, dir);
+      if (fs.existsSync(baseSrc)) {
+        copyRecursiveSync(baseSrc, path.join(targetAgentsDir, dir), replacements, { overwrite: true });
+      }
+      if (stackAgentsSrc) {
+        const stackSrc = path.join(stackAgentsSrc, dir);
+        if (fs.existsSync(stackSrc)) {
+          copyRecursiveSync(stackSrc, path.join(targetAgentsDir, dir), replacements, { overwrite: true });
+        }
+      }
+    });
+
+    managedFiles.forEach(file => {
+      const baseFile = path.join(baseAgentsSrc, file);
+      if (fs.existsSync(baseFile)) {
+        copyRecursiveSync(baseFile, path.join(targetAgentsDir, file), replacements, { overwrite: true });
+      }
+      if (stackAgentsSrc) {
+        const stackFile = path.join(stackAgentsSrc, file);
+        if (fs.existsSync(stackFile)) {
+          copyRecursiveSync(stackFile, path.join(targetAgentsDir, file), replacements, { overwrite: true });
+        }
+      }
+    });
+
+    preservedDirs.forEach(dir => {
+      const baseSrc = path.join(baseAgentsSrc, dir);
+      if (fs.existsSync(baseSrc)) {
+        copyRecursiveSync(baseSrc, path.join(targetAgentsDir, dir), replacements, { overwrite: false });
+      }
+    });
+
+    preservedFiles.forEach(file => {
+      const baseFile = path.join(baseAgentsSrc, file);
+      if (fs.existsSync(baseFile)) {
+        copyRecursiveSync(baseFile, path.join(targetAgentsDir, file), replacements, { overwrite: false });
+      }
+    });
+
+    // Repair skill links if Claude / Cursor adapters are present
+    if (fs.existsSync(path.join(targetDir, 'CLAUDE.md'))) {
+      tryLinkSkills(targetDir, path.join(targetDir, '.claude', 'skills'));
+    }
+    if (fs.existsSync(path.join(targetDir, '.cursor', 'rules', 'agent-harness.mdc'))) {
+      tryLinkSkills(targetDir, path.join(targetDir, '.cursor', 'skills'));
+    }
+
+    // Update config.json
+    const updatedConfig = {
+      ...existingConfig,
+      version: PKG_VERSION,
+      stack,
+      updatedAt: new Date().toISOString(),
+    };
+    fs.writeFileSync(configPath, JSON.stringify(updatedConfig, null, 2), 'utf8');
+  }
+
+  console.log(`\n${c.bold}${c.green}✔ ${dryRun ? 'Dry run complete' : 'Harness updated to v' + PKG_VERSION}!${c.reset}`);
+  console.log(`  ${c.cyan}Refreshed:${c.reset} agents/, skills/, scripts/, templates/, workflows/, context-policy.md, master-agent.md`);
+  console.log(`  ${c.green}Preserved:${c.reset} AGENTS.md, .agents/memory/, .agents/rules/, .agent-work/, IDE adapters (existing edits untouched)\n`);
 }
 
 function handleListSkills() {
@@ -421,14 +691,19 @@ ${c.bold}COMMANDS:${c.reset}
                         • all (Claude Code + Cursor + VS Code Copilot + native AGENTS.md)
                         • claude,cursor,copilot (comma-separated subset)
                         • none (AGENTS.md + .agents/ only)
+  ${c.green}doctor${c.reset}                Audit .agents/ health, token budget, IDE links & QA prereqs
+  ${c.green}update${c.reset}                Safely refresh agents/skills/scripts without touching memory/rules
+  ${c.green}update --dry-run${c.reset}      Preview update without modifying files
   ${c.green}list-skills${c.reset}           List all curated autonomous engineering skills
   ${c.green}add-skill <name>${c.reset}      Add a specific curated skill to .agents/skills/
   ${c.green}help${c.reset}                  Show this help manual
 
 ${c.bold}EXAMPLES:${c.reset}
-  npx agent-harness init
-  npx agent-harness init --stack nextjs
-  npx agent-harness add-skill playwright-e2e
+  npx create-agent-harness
+  npx create-agent-harness --stack nextjs
+  npx create-agent-harness doctor
+  npx create-agent-harness update
+  npx create-agent-harness add-skill retro
 `);
 }
 
@@ -441,6 +716,12 @@ async function main() {
   switch (command) {
     case 'init':
       await handleInit(args);
+      break;
+    case 'doctor':
+      handleDoctor();
+      break;
+    case 'update':
+      handleUpdate(args);
       break;
     case 'list':
     case 'list-skills':
@@ -457,7 +738,7 @@ async function main() {
       break;
     case '--version':
     case '-v':
-      console.log('1.0.3');
+      console.log(PKG_VERSION);
       break;
     default:
       console.log(`${c.red}Unknown command: ${command}${c.reset}`);
