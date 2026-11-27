@@ -211,10 +211,78 @@ async function handleInit(args) {
     }
   }
 
-  // 4. Write .agents/config.json
+  // 4. Deploy Cross-Agent Thin Adapters (Claude Code, Cursor, VS Code Copilot)
+  const adaptersFlagIndex = args.indexOf('--adapters');
+  const adaptersRaw = (adaptersFlagIndex !== -1 && args[adaptersFlagIndex + 1])
+    ? args[adaptersFlagIndex + 1].toLowerCase()
+    : 'all';
+  const enabledAdapters = adaptersRaw === 'none'
+    ? []
+    : adaptersRaw === 'all'
+      ? ['claude', 'cursor', 'copilot']
+      : adaptersRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+  const adaptersSrcDir = path.join(TEMPLATES_ROOT, '_base', 'adapters');
+  const installedAdapters = ['antigravity', 'codex']; // Native AGENTS.md + .agents/ support
+
+  function tryLinkSkills(linkDir) {
+    try {
+      const parent = path.dirname(linkDir);
+      if (!fs.existsSync(parent)) fs.mkdirSync(parent, { recursive: true });
+      if (!fs.existsSync(linkDir)) {
+        const linkType = process.platform === 'win32' ? 'junction' : 'dir';
+        const targetSkills = path.join(targetDir, '.agents', 'skills');
+        const linkTarget = process.platform === 'win32'
+          ? targetSkills
+          : path.relative(parent, targetSkills);
+        fs.symlinkSync(linkTarget, linkDir, linkType);
+        return true;
+      }
+    } catch (e) {
+      // Graceful fallback when symlink permissions are restricted
+    }
+    return false;
+  }
+
+  if (enabledAdapters.includes('claude')) {
+    const claudeMd = path.join(targetDir, 'CLAUDE.md');
+    if (!fs.existsSync(claudeMd)) {
+      copyRecursiveSync(path.join(adaptersSrcDir, 'CLAUDE.template.md'), claudeMd, replacements);
+    }
+    tryLinkSkills(path.join(targetDir, '.claude', 'skills'));
+    installedAdapters.push('claude');
+  }
+
+  if (enabledAdapters.includes('cursor')) {
+    const cursorRuleDir = path.join(targetDir, '.cursor', 'rules');
+    const cursorRuleFile = path.join(cursorRuleDir, 'agent-harness.mdc');
+    if (!fs.existsSync(cursorRuleFile)) {
+      if (!fs.existsSync(cursorRuleDir)) fs.mkdirSync(cursorRuleDir, { recursive: true });
+      copyRecursiveSync(path.join(adaptersSrcDir, 'cursor-agent-harness.mdc'), cursorRuleFile, replacements);
+    }
+    tryLinkSkills(path.join(targetDir, '.cursor', 'skills'));
+    installedAdapters.push('cursor');
+  }
+
+  if (enabledAdapters.includes('copilot')) {
+    const githubDir = path.join(targetDir, '.github');
+    const copilotFile = path.join(githubDir, 'copilot-instructions.md');
+    if (!fs.existsSync(copilotFile)) {
+      if (!fs.existsSync(githubDir)) fs.mkdirSync(githubDir, { recursive: true });
+      copyRecursiveSync(path.join(adaptersSrcDir, 'copilot-instructions.template.md'), copilotFile, replacements);
+    }
+    installedAdapters.push('copilot');
+  }
+
+  if (enabledAdapters.length > 0) {
+    console.log(`${c.gray}  • Wired cross-agent adapters: ${installedAdapters.join(', ')}...${c.reset}`);
+  }
+
+  // 5. Write .agents/config.json
   const config = {
     version: '1.0.0',
     stack: chosenStack,
+    adapters: installedAdapters,
     installedAt: new Date().toISOString(),
     roles: [
       'architect',
@@ -229,13 +297,22 @@ async function handleInit(args) {
 
   console.log(`\n${c.bold}${c.green}✔ Successfully scaffolded agent harness!${c.reset}\n`);
   console.log(`Summary of deployed assets:`);
-  console.log(`  ${c.cyan}.agents/agents/${c.reset}    - 6 core role definitions`);
-  console.log(`  ${c.cyan}.agents/memory/${c.reset}    - Tiered memory & system conventions`);
-  console.log(`  ${c.cyan}.agents/workflows/${c.reset} - Multi-agent and hotfix pipelines`);
-  console.log(`  ${c.cyan}.agents/rules/${c.reset}     - Engineering & QA test standards`);
-  console.log(`  ${c.cyan}.agents/skills/${c.reset}    - Lean built-in Caveman (5) + Engineering (8) + stack skills`);
-  console.log(`  ${c.cyan}AGENTS.md${c.reset}          - Project root harness overview\n`);
-  console.log(`${c.bold}${c.green}✔ All optimization, memory, and stack skills are built-in and ready to run with zero extra setup!${c.reset}\n`);
+  console.log(`  ${c.cyan}.agents/agents/${c.reset}              - 6 core role definitions`);
+  console.log(`  ${c.cyan}.agents/memory/${c.reset}              - Tiered memory & system conventions`);
+  console.log(`  ${c.cyan}.agents/workflows/${c.reset}           - Multi-agent and hotfix pipelines`);
+  console.log(`  ${c.cyan}.agents/rules/${c.reset}               - Engineering & QA test standards`);
+  console.log(`  ${c.cyan}.agents/skills/${c.reset}              - Lean built-in Caveman (5) + Engineering (8) + stack skills`);
+  console.log(`  ${c.cyan}AGENTS.md${c.reset}                    - Universal root entrypoint (Antigravity, Codex, OpenCode)`);
+  if (enabledAdapters.includes('claude')) {
+    console.log(`  ${c.cyan}CLAUDE.md + .claude/skills${c.reset}   - Claude Code adapter (linked to .agents/skills)`);
+  }
+  if (enabledAdapters.includes('cursor')) {
+    console.log(`  ${c.cyan}.cursor/rules/agent-harness.mdc${c.reset} - Cursor adapter (linked to .agents/skills)`);
+  }
+  if (enabledAdapters.includes('copilot')) {
+    console.log(`  ${c.cyan}.github/copilot-instructions.md${c.reset} - VS Code / GitHub Copilot adapter`);
+  }
+  console.log(`\n${c.bold}${c.green}✔ Ready across Antigravity, Claude Code, Codex, Cursor, and VS Code Copilot with zero duplication!${c.reset}\n`);
 }
 
 function handleListSkills() {
@@ -293,7 +370,11 @@ ${c.bold}COMMANDS:${c.reset}
                         • node-typescript
                         • python-fastapi
                         • base-only
-  ${c.green}list-skills${c.reset}           List all 18+ curated autonomous engineering skills
+  ${c.green}init --adapters <list>${c.reset} Cross-agent adapters (default: all):
+                        • all (Claude Code + Cursor + VS Code Copilot + native AGENTS.md)
+                        • claude,cursor,copilot (comma-separated subset)
+                        • none (AGENTS.md + .agents/ only)
+  ${c.green}list-skills${c.reset}           List all curated autonomous engineering skills
   ${c.green}add-skill <name>${c.reset}      Add a specific curated skill to .agents/skills/
   ${c.green}help${c.reset}                  Show this help manual
 

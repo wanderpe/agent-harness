@@ -70,6 +70,20 @@ Every scaffolded project automatically comes with a **lean, high-signal built-in
 - **Core Engineering Skills (8 universal + stack-specific)**: `diagnosing-bugs`, `code-review` (two-axis Standards vs Spec + Fowler smells), `tdd`, `codebase-design`, `domain-modeling`, `grilling`, `pr`, `writing-for-agents`, plus stack skills (`setup-pre-commit`, `setup-ts-deep-modules`, `prototype` for Next.js, `laravel-best-practices` for Laravel).
 - **Optional Catalog (`skills/`)**: Situational utilities (`caveman-compress`, `caveman-stats`, `retro`, `research`, `handoff`, `wizard`, `improve-codebase-architecture`, etc.) live in the optional catalog via `npx agent-harness add-skill <name>` so they never bloat your daily system prompt. See [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) for MIT attribution.
 
+### 4. Universal Cross-Agent Compatibility (Zero Duplication)
+`.agents/` and `AGENTS.md` act as the **single source of truth**. On `init`, thin ~15-line adapters and skill symlinks/junctions are automatically wired so every major AI coding agent uses the exact same harness:
+
+| AI Agent / IDE | Entrypoint | Skills Discovery |
+| :--- | :--- | :--- |
+| **Antigravity (Google)** | `AGENTS.md` (native) | `.agents/skills/` (native) |
+| **OpenAI Codex CLI** | `AGENTS.md` (native) | `.agents/skills/` (native) |
+| **Claude Code** | `CLAUDE.md` (thin pointer) | `.claude/skills` → `.agents/skills/` |
+| **Cursor** | `.cursor/rules/agent-harness.mdc` | `.cursor/skills` → `.agents/skills/` |
+| **VS Code / GitHub Copilot** | `.github/copilot-instructions.md` | References `.agents/skills/` |
+| **Windsurf / OpenCode / Aider** | `AGENTS.md` (native) | `.agents/skills/` |
+
+Control adapters with `--adapters all|claude,cursor,copilot|none` (defaults to `all`).
+
 ---
 
 ## ⚡ Quickstart

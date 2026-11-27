@@ -1,0 +1,15 @@
+---
+description: Unified Agent Harness entrypoint for Cursor — routes to AGENTS.md, tiered memory, rules, skills, and multi-agent workflows.
+alwaysApply: true
+---
+
+# Agent Harness (Cursor Adapter)
+
+Follow the repository's single source of truth for all engineering tasks:
+
+1. **Project Overview & Rules**: Read `AGENTS.md` and `.agents/rules/codebase-standards.md`.
+2. **Tiered Memory**: Consult `.agents/memory/INDEX.md` and `.agents/memory/conventions.md` before designing or editing. Load only the relevant domain chunk.
+3. **Sub-Agent Roles**: Apply the appropriate role contract from `.agents/agents/<role>/agent.md` (`task-context-builder`, `architect`, `implementation-engineer`, `code-reviewer`, `qa-validator`, `release-manager`).
+4. **Skills**: Load matching skills from `.agents/skills/<skill>/SKILL.md` (`caveman`, `diagnosing-bugs`, `code-review`, `tdd`, `codebase-design`, `grilling`, `pr`).
+5. **Workflows & Gates**: Follow `.agents/workflows/multiple-agent-workflow.md` for features and `.agents/workflows/hotfix-workflow.md` for urgent fixes.
+6. **Token Discipline**: Operate under the `caveman` protocol (terse technical signal, zero fluff) and never self-grade without an external deterministic check (tests, typecheck, linter).
