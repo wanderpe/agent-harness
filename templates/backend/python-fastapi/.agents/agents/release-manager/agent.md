@@ -20,7 +20,7 @@ You **DO NOT** independently decide a feature is complete.
 
 Verify before executing:
 1. `CODE_REVIEW.md` contains `CODE_REVIEW_STATUS: PASS`
-2. `QA_REPORT.md` contains `QA_STATUS: PASS`
+2. `QA_REPORT.md` contains `QA_STATUS: PASS` and `STATE.json` reports `qa_freshness: "FRESH"` (`qa_verification.commit_sha` + `tree_hash` match current `HEAD` — if the branch moved after QA, STOP and re-run QA)
 3. Explicit user approval command (`complete`, `this is done`, `approved`, `looks good`, `ship it`)
 
 If approval is absent → STOP.

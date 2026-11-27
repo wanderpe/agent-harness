@@ -1,6 +1,8 @@
 # QA Report — {{TASK_ID}}
 
 QA_STATUS: FAIL
+QA_COMMIT_SHA: <git rev-parse HEAD>
+QA_BRANCH: <git rev-parse --abbrev-ref HEAD>
 
 ## QA Status
 

@@ -12,6 +12,8 @@
  *   bun .agents/scripts/manage-state.ts --action=status --task=feat/my-feature
  */
 
+import { execSync } from "child_process";
+import { createHash } from "crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "fs";
 import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
@@ -38,8 +40,63 @@ interface StateJson {
     gate_1_architecture: "PENDING" | "APPROVED" | "REJECTED" | "SKIPPED";
     gate_6_final_verdict: "PENDING" | "APPROVED" | "REJECTED";
   };
+  qa_verification?: {
+    commit_sha: string | null;
+    branch: string | null;
+    tree_hash: string | null;
+    verified_at: string;
+  };
   created_at: string;
   updated_at: string;
+}
+
+interface GitSnapshot {
+  commit_sha: string | null;
+  branch: string | null;
+  tree_hash: string | null;
+}
+
+function captureGitSnapshot(): GitSnapshot {
+  const runGit = (cmd: string): string | null => {
+    try {
+      return execSync(cmd, { cwd: PROJECT_ROOT, stdio: ["ignore", "pipe", "ignore"] }).toString("utf8").trim();
+    } catch {
+      return null;
+    }
+  };
+  const commit_sha = runGit("git rev-parse HEAD");
+  const branch = runGit("git rev-parse --abbrev-ref HEAD");
+  if (!commit_sha) return { commit_sha: null, branch: null, tree_hash: null };
+  // Hash working-tree code changes excluding .agent-work/ so QA reports don't self-invalidate
+  const status = runGit("git status --porcelain -- . \":(exclude).agent-work\"") ?? "";
+  const diff = runGit("git diff HEAD -- . \":(exclude).agent-work\"") ?? "";
+  const tree_hash = createHash("sha256").update(status + "\n---\n" + diff).digest("hex").slice(0, 16);
+  return { commit_sha, branch, tree_hash };
+}
+
+function checkQaFreshness(state: StateJson): { status: "FRESH" | "STALE" | "UNVERIFIED"; reason?: string; current: GitSnapshot } {
+  const current = captureGitSnapshot();
+  if (!state.qa_verification || !state.qa_verification.commit_sha) {
+    return { status: "UNVERIFIED", reason: "No QA commit SHA pinned in STATE.json", current };
+  }
+  if (!current.commit_sha) {
+    return { status: "UNVERIFIED", reason: "Not inside a Git repository", current };
+  }
+  if (current.commit_sha !== state.qa_verification.commit_sha) {
+    return {
+      status: "STALE",
+      reason: `Branch HEAD moved: QA passed on ${state.qa_verification.commit_sha.slice(0, 7)}, current HEAD is ${current.commit_sha.slice(0, 7)}`,
+      current,
+    };
+  }
+  if (state.qa_verification.tree_hash && current.tree_hash && current.tree_hash !== state.qa_verification.tree_hash) {
+    return {
+      status: "STALE",
+      reason: `Working tree changed since QA passed (QA tree ${state.qa_verification.tree_hash} !== current ${current.tree_hash})`,
+      current,
+    };
+  }
+  return { status: "FRESH", current };
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -315,8 +372,16 @@ function actionTransition(args: Record<string, string>): void {
   if (targetNode === "node_2_implementation" && previousNode === "gate_1_architecture_approval") {
     state.gate_checkpoints.gate_1_architecture = "APPROVED";
   }
-  if (targetNode === "node_5_release_manager") {
-    state.gate_checkpoints.gate_6_final_verdict = "APPROVED";
+  if (targetNode === "node_5_release_manager" || targetNode === "node_hotfix_release") {
+    const freshness = checkQaFreshness(state);
+    if (freshness.status === "STALE" && args.force !== "true") {
+      console.error(`❌ STALE QA VERDICT: ${freshness.reason}`);
+      console.error(`   Re-run QA on the current commit before releasing (or pass --force=true to override).`);
+      process.exit(1);
+    }
+    if (targetNode === "node_5_release_manager") {
+      state.gate_checkpoints.gate_6_final_verdict = "APPROVED";
+    }
   }
 
   // Auto-discover artifacts on disk
@@ -407,16 +472,25 @@ function actionSetVerdict(args: Record<string, string>): void {
     state.qa_cycles += 1;
 
     if (verdict === "FAIL") {
+      state.qa_verification = undefined;
       state.current_node = "node_2_implementation";
       writeState(taskId, state);
       console.log(`🟡 QA FAIL (cycle ${state.qa_cycles}) → returning to Node 2 (Implementation)`);
       return;
     }
 
-    // PASS
+    // PASS — pin exact Git commit SHA & working-tree hash so branch drift invalidates stale QA
+    const snap = captureGitSnapshot();
+    state.qa_verification = {
+      ...snap,
+      verified_at: new Date().toISOString(),
+    };
     state.current_node = state.workflow_type === "HOTFIX" ? "gate_emergency_user_approval" : "gate_6_user_final_verdict";
     writeState(taskId, state);
     console.log(`✅ QA PASS (after ${state.qa_cycles} cycle(s)) → advancing to Gate 6 (User Final Verdict)`);
+    if (snap.commit_sha) {
+      console.log(`   📌 Pinned to commit ${snap.commit_sha.slice(0, 7)} (branch: ${snap.branch}, tree: ${snap.tree_hash})`);
+    }
     return;
   }
 }
@@ -430,7 +504,13 @@ function actionStatus(args: Record<string, string>): void {
   }
 
   const state = readState(taskId);
-  console.log(JSON.stringify(state, null, 2));
+  const freshness = checkQaFreshness(state);
+  console.log(JSON.stringify({
+    ...state,
+    qa_freshness: freshness.status,
+    ...(freshness.reason ? { qa_freshness_note: freshness.reason } : {}),
+    current_head_sha: freshness.current.commit_sha,
+  }, null, 2));
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
